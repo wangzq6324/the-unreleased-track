@@ -17,6 +17,55 @@
   let furthest = 0;
   let answer = '';
   let preferredDate = '';
+  const guestKey = new URLSearchParams(location.hash.slice(1)).get('invite') || '';
+  const canSubmit = /^[-_A-Za-z0-9]{32}$/.test(guestKey) && !!read('replyService');
+  let requestKey = '', requestId = '', delivered = '', sending = false;
+  function replyData() {
+    return {
+      answer,
+      food: answer === 'no' ? '' : dinnerFood(),
+      date: answer === 'yes' ? dinnerDate() : '',
+      time: answer === 'yes' ? time : '',
+      alternate: answer === 'later' ? $('alternateDate').value : ''
+    };
+  }
+  function refreshSubmit() {
+    const same = delivered === JSON.stringify(replyData());
+    $('submitReply').hidden = !canSubmit;
+    $('submitReply').disabled = same || sending;
+    put('submitReply', sending ? '正在提交…' : same ? '已提交给 ' + fromName : '提交给 ' + fromName);
+    put('sendStatus', same ? '已保存到 ' + fromName + ' 的收件页。' : '');
+  }
+  $('alternateDate').addEventListener('input', refreshSubmit);
+  $('submitReply').addEventListener('click', async () => {
+    if (!canSubmit || sending || current !== endingIndex) return;
+    const data = replyData(), signature = JSON.stringify(data);
+    if (signature === delivered) return;
+    if (requestKey !== signature) {
+      requestId = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const n = crypto.getRandomValues(new Uint8Array(1))[0] & 15;
+        return (c === 'x' ? n : (n & 3) | 8).toString(16);
+      });
+      requestKey = signature;
+    }
+    sending = true;
+    refreshSubmit();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    let saved = false;
+    try {
+      const response = await fetch(read('replyService') + '/reply', {
+        method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + guestKey},
+        body:JSON.stringify({...data, id:requestId}), signal:controller.signal, credentials:'omit', referrerPolicy:'no-referrer'
+      });
+      saved = response.ok && (await response.json()).saved === true;
+      if (saved) delivered = signature;
+    } catch { /* 网络断开时保留重试和手动复制。 */ }
+    finally { clearTimeout(timer); sending = false; refreshSubmit(); }
+    if (!saved && current === endingIndex && signature === JSON.stringify(replyData())) {
+      put('sendStatus','尚未确认收到。可以重试，也可以复制回复发给 ' + fromName + '。');
+    }
+  });
   let transitionTimer, letterTimer, tapTimer, toastTimer;
   let taps = 0;
   let transitioning = false;
@@ -240,7 +289,8 @@
     put('endingMessage', message);
     put('copyReplyBtn', action);
     put('copyStatus', '');
-    put('replyNote', '复制后，可自行粘贴发送给' + fromName + '。页面不会自动发送。');
+    refreshSubmit();
+    put('replyNote', canSubmit ? '点提交后，' + fromName + ' 可以看到' + ({yes:'你的赴约选择和晚餐口味。',later:'你的改期意愿、所选日期和晚餐口味。',no:'你这次先不了的回复。'})[kind] : '复制后，可自行粘贴发送给 ' + fromName + '。');
     for (const id of ['keepsakeCard','saveTicketBtn','saveTip','closingQuote']) $(id).hidden = !accepted;
     $('alternateWrap').hidden = kind !== 'later';
     if (accepted) {
@@ -294,7 +344,7 @@
     c.fillStyle=paper;c.fillRect(cut,0,1920-cut,h);
     c.strokeStyle='#a28a76';c.lineWidth=2;c.strokeRect(24,24,1872,h-48);
     const gold='#d4b18f',cream='#f4e6d6',ink='#382e37';
-    type('R I C K Y D O G    R E C O R D S',76,95,'29px monospace',gold);
+    type('R I C K Y    R E C O R D S',76,95,'29px monospace',gold);
     type('BONUS TRACK',1170,95,'28px monospace',gold);
     line(76,137,1435,137,'#786a62');
     type('The Unreleased',70,300,'138px Georgia',cream);

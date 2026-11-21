@@ -1,6 +1,7 @@
 // 名字、安排和回复都在这里修改。空字符串表示尚未确定。
 window.INVITATION_CONFIG = {
   fromName: 'Ricky',
+  replyService: 'https://date.rickydog.com/rsvp', // 留空即可使用纯静态复制回复。
   toName: 'leaya',
   date: '11 月 22 日（周日）',
   time: '晚上',

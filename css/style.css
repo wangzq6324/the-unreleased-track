@@ -280,3 +280,13 @@ body[data-act="3"] {background-color:#332831;--accent:#e1bba4}
 #customDish {width:100%;color:#362833;background:#fcf2e5;border:1px solid #a18778;font-family:inherit;font-size:16px;min-height:44px;padding:8px 12px}
 .menu-sign {margin-top:15px;text-align:right;font:italic 20px var(--serif)}
 @media(max-width:620px){.tracks{grid-template-columns:repeat(3,minmax(0,1fr))}.tracks button{flex-direction:row;align-items:center;justify-content:flex-start}.menu-slip{padding:23px 22px 18px}.supper-seal{width:46px}.dish-list{column-gap:12px}.menu-edition{font-size:8px}.menu-heading h2{font-size:52px}.menu-heading p{font-size:16px}.dish-list span{padding-inline:6px}}
+
+.mailbox {width:min(100%,570px);padding-block:54px;margin:auto}
+.mailbox h1 {font-size:clamp(60px,10vw,98px)}
+.mailbox form {display:grid;gap:10px;margin:28px 0;justify-items:start}
+.mailbox input {width:100%;max-width:340px;padding:10px;font-size:16px}
+#mailStatus {margin:20px 0;color:var(--accent)}
+#mailDetails {display:grid;grid-template-columns:6em 1fr;gap:14px;border-block:1px solid var(--rule);padding:22px 0;line-height:1.6}
+#mailDetails dd {margin:0;overflow-wrap:anywhere}
+#mailDetails dt {color:var(--quiet)}
+#submitReply:disabled {opacity:.7;cursor:default}
