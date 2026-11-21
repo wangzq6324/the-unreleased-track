@@ -290,3 +290,8 @@ body[data-act="3"] {background-color:#332831;--accent:#e1bba4}
 #mailDetails dd {margin:0;overflow-wrap:anywhere}
 #mailDetails dt {color:var(--quiet)}
 #submitReply:disabled {opacity:.7;cursor:default}
+
+.menu-heading h2 {font-family:"Songti SC","STSong",var(--serif);font-size:clamp(36px,6vw,54px);letter-spacing:.025em}
+.menu-heading h2 em,.mailbox h1 em {font-style:normal}
+.mailbox h1 {font-family:"Songti SC","STSong",var(--serif);font-size:clamp(42px,8vw,72px);letter-spacing:.02em}
+.ticket-picture i {font-family:"Songti SC",serif;font-style:normal;line-height:1.14}

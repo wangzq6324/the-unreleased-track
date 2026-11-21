@@ -11,13 +11,13 @@
   const time = read('time') || undecided;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const scenes = Array.from(document.querySelectorAll('.scene'));
-  const chapters = ['The Intro', 'The Lyrics', 'The Date', 'The Menu', 'The Choice', 'Bonus Track'];
+  const chapters = ['封面', '来信', '门票', '菜单', '回应', '纪念票根'];
   const endingIndex = scenes.indexOf($('ending'));
   let current = 0;
   let furthest = 0;
   let answer = '';
   let preferredDate = '';
-  const guestKey = new URLSearchParams(location.hash.slice(1)).get('invite') || '';
+  const guestKey = new URLSearchParams(location.search).get('invite') || new URLSearchParams(location.hash.slice(1)).get('invite') || '';
   const canSubmit = /^[-_A-Za-z0-9]{32}$/.test(guestKey) && !!read('replyService');
   let requestKey = '', requestId = '', delivered = '', sending = false;
   function replyData() {
@@ -275,8 +275,8 @@
   }
   const endings = {
     yes: ["It's a date.", '那么，这首歌就留给见面那天。', '复制赴约回复'],
-    later: ['Another evening.', '好吃的晚餐，值得等一个彼此都有空的晚上。', '复制协商时间消息'],
-    no: ['Thanks for listening.', '谢谢你把这张唱片听到这里。祝你有个愉快的晚上。', '复制回复']
+    later: ['那就改天见。', '好吃的晚餐，值得等一个彼此都有空的晚上。', '复制协商时间消息'],
+    no: ['谢谢你读到这里。', '谢谢你把这张唱片听到这里。祝你有个愉快的晚上。', '复制回复']
   };
   function finish(kind) {
     answer = kind;
@@ -284,8 +284,8 @@
     const accepted = kind === 'yes';
     const [title, message, action] = endings[kind];
     put('endingTitle', title);
-    put('endingAct', accepted ? 'ACT 06 / BONUS TRACK' : 'ACT 06 / OUTRO');
-    tracks[endingIndex].lastChild.textContent = accepted ? chapters[endingIndex] : 'The Outro';
+    put('endingAct', accepted ? '第六幕 / 纪念票根' : '第六幕 / 尾声');
+    tracks[endingIndex].lastChild.textContent = accepted ? chapters[endingIndex] : '尾声';
     put('endingMessage', message);
     put('copyReplyBtn', action);
     put('copyStatus', '');
@@ -327,9 +327,9 @@
       return result;
     }
     const fields = [
-      ['FROM  /  邀请人', fromName], ['FOR  /  收件人', toName],
-      ['WHEN  /  晚餐', dinnerDate() + (time !== undecided ? ' · ' + time : '')], ['WHERE  /  餐厅', restaurant],
-      ['MENU  /  想吃', dinnerFood() || '见面再决定']
+      ['邀请人', fromName], ['收件人', toName],
+      ['晚餐时间', dinnerDate() + (time !== undecided ? ' · ' + time : '')], ['餐厅', restaurant],
+      ['想吃的口味', dinnerFood() || '见面再决定']
     ].map(([label, value]) => [label, wrap(value, 635)]);
     const firstHeight = 132 + Math.max(fields[0][1].length,fields[1][1].length)*67;
     const secondHeight = 122 + Math.max(fields[2][1].length,fields[3][1].length)*67;
@@ -436,7 +436,7 @@
     const playing=audible() && ctx?.state==='running';
     if(playing && interval===null) {musicBeat();interval=setInterval(musicBeat,550);}
     if(!playing) stopBeat();
-    put('soundLabel',playing?'SOUND ON':'SOUND OFF');
+    put('soundLabel',playing?'音乐开':'音乐关');
     $('soundBtn').setAttribute('aria-pressed',String(!!playing));
     $('soundBtn').setAttribute('aria-label',playing?'关闭背景音乐':'开启背景音乐');
   }

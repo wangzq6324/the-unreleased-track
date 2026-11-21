@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#111626">
   <meta name="description" content="The Unreleased Track，一张私人唱片，一封晚餐邀请。">
   <title>The Unreleased Track · Ricky Records</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=reply2">
-  <script defer src="js/config.js?v=reply2"></script>
-  <script defer src="js/app.js?v=reply2"></script>
+  <link rel="stylesheet" href="css/style.css?v=zh3">
+  <script defer src="js/config.js?v=zh3"></script>
+  <script defer src="js/app.js?v=zh3"></script>
 </head>
 <body data-act="0">
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -19,13 +20,13 @@
   <div class="sky" aria-hidden="true"></div>
   <header class="site-header frame">
     <a class="brand" id="brandHome" href="#intro" aria-label="Ricky Records，返回封面"><svg aria-hidden="true"><use href="#disc"/></svg><span>Ricky <i>Records</i></span></a>
-    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="开启背景音乐"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">SOUND OFF</span></button></div>
+    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="开启背景音乐"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">音乐关</span></button></div>
   </header>
   <main id="app" class="frame">
     <section id="intro" class="scene active" aria-labelledby="introTitle">
       <div class="intro-layout">
         <div class="intro-copy">
-          <p class="eyebrow"><span class="rule"></span>ACT 01 <span class="slash">/</span> THE INTRO</p>
+          <p class="eyebrow"><span class="rule"></span>第一幕 <span class="slash">/</span> 黑胶序曲</p>
           <h1 id="introTitle" tabindex="-1">The Night<br>We Haven’t<br><em>Written Yet.</em></h1>
           <p class="hero-chinese">有些故事，从一顿晚餐开始。</p>
           <div class="play-row"><button id="playStory" class="primary-btn" type="button"><span class="play-icon" aria-hidden="true"></span>播放这段故事</button><span class="duration mono">约 1 分钟</span></div>
@@ -61,7 +62,7 @@
     </section>
     <section id="lyrics" class="scene" hidden inert aria-labelledby="lyricsTitle">
       <div class="letter-layout"><div class="paper">
-        <div class="printline mono"><span>RICKY RECORDS</span><span>ACT 02 / LINER NOTES</span></div>
+        <div class="printline mono"><span>RICKY RECORDS</span><span>第二幕 / 写给你的信</span></div>
         <p class="paper-salutation line" id="recipientLine"></p>
         <h2 id="lyricsTitle" class="line" tabindex="-1">有一段话，想当面说。</h2>
         <div class="lyrics-lines">
@@ -73,15 +74,15 @@
       </div><div class="scene-actions"><button data-back="0" class="subtle">返回封面</button><button id="skipLetter" class="subtle">跳过逐行显示</button><button data-next="2" class="primary-btn">打开晚餐门票</button></div></div>
     </section>
     <section id="ticket" class="scene" hidden inert aria-labelledby="ticketTitle">
-      <div class="center-layout"><p class="eyebrow">ACT 03 / THE DATE</p><h2 class="headline" id="ticketTitle" tabindex="-1">One evening.<br><em>Two seats.</em></h2>
+      <div class="center-layout"><p class="eyebrow">第三幕 / 晚餐门票</p><h2 class="headline" id="ticketTitle" tabindex="-1">One evening.<br><em>Two seats.</em></h2>
         <button class="ticket-wrap" id="flipTicket" aria-pressed="false" aria-label="翻看门票背面">
           <span class="ticket-flipper"><span class="ticket-face ticket-front">
-            <span class="ticket-picture" aria-hidden="true"><i>Admit<br>Two.</i></span>
-            <span class="ticket-body"><span class="ticket-kicker mono">DINNER INVITATION</span><span class="ticket-info">
-              <span><small>DATE / 日期</small><strong id="dateText"></strong></span><span><small>TIME / 时间</small><strong id="timeText"></strong></span>
-              <span><small>VENUE / 餐厅</small><strong id="placeText"></strong></span><span><small>FROM / 邀请人</small><strong id="ticketFrom"></strong></span></span>
+            <span class="ticket-picture" aria-hidden="true"><i>双人<br>入场</i></span>
+            <span class="ticket-body"><span class="ticket-kicker mono">双人晚餐邀请</span><span class="ticket-info">
+              <span><small>日期</small><strong id="dateText"></strong></span><span><small>时间</small><strong id="timeText"></strong></span>
+              <span><small>餐厅</small><strong id="placeText"></strong></span><span><small>邀请人</small><strong id="ticketFrom"></strong></span></span>
             </span><span class="ticket-stub mono"><span>NO. 0013</span><i class="barcode"></i></span>
-          </span><span class="ticket-face ticket-reverse" aria-hidden="true"><svg><use href="#star"/></svg><i>The best part isn't the place.<br>It's the company.</i><span>不是餐厅有多特别，而是我想和你一起去。</span><small class="mono">REVERSE SIDE · 0013</small></span></span>
+          </span><span class="ticket-face ticket-reverse" aria-hidden="true"><svg><use href="#star"/></svg><i>The best part isn't the place.<br>It's the company.</i><span>不是餐厅有多特别，而是我想和你一起去。</span><small class="mono">门票背面 · 0013</small></span></span>
         </button>
         <p class="flip-hint" id="flipHint">轻点门票，翻看背面</p>
         <fieldset id="dateOptions" hidden><legend>你更喜欢哪个晚上？</legend><div id="candidateList"></div></fieldset>
@@ -91,9 +92,9 @@
     <section id="menu" class="scene" hidden inert aria-labelledby="menuTitle">
       <div class="supper">
         <div class="menu-slip">
-          <div class="menu-edition mono"><span>ACT 04 / THE MENU</span><span id="menuWhen"></span></div>
+          <div class="menu-edition mono"><span>第四幕 / 点餐</span><span id="menuWhen"></span></div>
           <header class="menu-heading">
-            <div><h2 id="menuTitle" tabindex="-1">À la <em>carte.</em></h2><p id="menuQuestion"></p></div>
+            <div><h2 id="menuTitle" tabindex="-1">晚餐<em>菜单</em></h2><p id="menuQuestion"></p></div>
             <svg class="supper-seal" viewBox="0 0 72 72" aria-hidden="true" fill="none" stroke="currentColor">
               <circle cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="26.5" stroke-dasharray="1 3"/>
               <g transform="rotate(-9 36 36)" stroke-linecap="round"><path d="M17 42h38m-35-3a16 16 0 0 1 32 0Zm14-17a2 2 0 1 1 4 0M28 32q2-4 7-5M24 46h24"/></g>
@@ -101,13 +102,13 @@
           </header>
           <fieldset class="dish-field"><legend>选一个想吃的，也可以见面再定。</legend><div class="dish-list" id="dishList"></div></fieldset>
           <label id="dishWriteIn" hidden>想吃什么？<input id="customDish" maxlength="36" type="text" placeholder="写下菜名或口味"></label>
-          <div class="menu-sign"><span>Bon appétit,</span> <i id="menuFrom"></i></div>
+          <div class="menu-sign"><span>等你点菜，</span> <i id="menuFrom"></i></div>
         </div>
         <div class="scene-actions"><button class="subtle" data-back="2">返回门票</button><button class="primary-btn" data-next="4">回应邀请</button></div>
       </div>
     </section>
     <section id="choice" class="scene" hidden inert aria-labelledby="choiceTitle">
-      <div class="center-layout"><p class="eyebrow">ACT 05 / THE CHOICE</p><div class="choice-mark" aria-hidden="true">
+      <div class="center-layout"><p class="eyebrow">第五幕 / 你的回应</p><div class="choice-mark" aria-hidden="true">
         <svg class="constellation" viewBox="0 0 360 105" fill="none">
           <path pathLength="1" d="M7 76 39 58 84 70 112 38 151 43 180 52 205 32 242 46 275 18 315 31 348 9"/>
           <g fill="currentColor"><circle cx="7" cy="76" r="1.7"/><circle cx="39" cy="58" r="2.4"/><circle cx="84" cy="70" r="1.7"/><circle cx="112" cy="38" r="2.2"/><circle cx="151" cy="43" r="1.7"/><circle cx="205" cy="32" r="2"/><circle cx="242" cy="46" r="1.7"/><circle cx="275" cy="18" r="2.6"/><circle cx="315" cy="31" r="1.7"/><circle cx="348" cy="9" r="2.2"/></g>
@@ -116,7 +117,7 @@
       </div>
     </section>
     <section id="ending" class="scene" hidden inert aria-labelledby="endingTitle">
-      <div class="center-layout"><p id="endingAct" class="eyebrow">ACT 06 / BONUS TRACK</p><h2 id="endingTitle" class="headline" tabindex="-1"></h2><p id="endingMessage" class="subtitle"></p>
+      <div class="center-layout"><p id="endingAct" class="eyebrow">第六幕 / 纪念票根</p><h2 id="endingTitle" class="headline" tabindex="-1"></h2><p id="endingMessage" class="subtitle"></p>
         <figure class="ending-card" id="keepsakeCard"><img id="ticketImage" alt="专属晚餐纪念票根"></figure>
         <p class="save-tip" id="saveTip">手机可长按上方票根保存图片</p>
         <label id="alternateWrap" hidden>你方便的另一个晚上<input id="alternateDate" type="date"></label>
@@ -127,7 +128,7 @@
       </div>
     </section>
   </main>
-  <footer class="frame"><div class="footer-rule mono"><span>TRACKLIST</span><span id="actCount">01 / 06</span></div>
+  <footer class="frame"><div class="footer-rule mono"><span>曲目表</span><span id="actCount">01 / 06</span></div>
     <nav class="tracks" aria-label="已读曲目导航"></nav>
     <div class="colophon mono"><span>RICKY RECORDS</span><svg aria-hidden="true"><use href="#star"/></svg><span>PRIVATE PRESSING</span></div>
   </footer>
