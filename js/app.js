@@ -410,11 +410,16 @@
     put('copyStatus',ok?'已复制，可粘贴到聊天框。':'请长按或选中复制：'+message);
   });
 
-  // 保留初版和声。单个上下文和单个节拍器跟随用户意图及实际音频状态。
-  const chords=[[261.63,329.63,392,493.88],[220,261.63,329.63,392],[174.61,220,261.63,349.23],[196,246.94,293.66,392]];
-  let ctx=null, interval=null, beat=0, wantsSound=false, pageAway=false, audioRequest=0;
-  const voices=new Set();
-  function audible() {return wantsSound && !document.hidden && !pageAway;}
+  const piano = $('piano');
+  let ctx = null;
+  const voices = new Set();
+  function stopEffects() {
+    for (const voice of voices) {
+      try { voice.stop(); } catch { /* The voice already ended. */ }
+    }
+    voices.clear();
+  }
+  piano.addEventListener('pause', stopEffects);
   function tone(hz, when, duration, level) {
     const osc=ctx.createOscillator(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
     osc.type='sine';osc.frequency.value=hz;filter.type='lowpass';filter.frequency.value=1550;
@@ -427,7 +432,14 @@
     osc.start(when);osc.stop(when+duration+.02);
   }
   function interactionSound(kind) {
-    if (!audible() || ctx?.state !== 'running') return;
+    if (piano.paused || document.hidden || !window.AudioContext && !window.webkitAudioContext) return;
+    try {
+      ctx ??= new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state !== 'running') {
+        ctx.resume().catch(() => {});
+        return;
+      }
+    } catch { return; }
     const now = ctx.currentTime + .01;
     if (kind === 'pick') { tone(440,now,.2,.011); return; }
     const duration = kind === 'needle' ? .11 : .19;
@@ -441,56 +453,8 @@
     voices.add(source); source.onended=()=>{voices.delete(source);source.disconnect();filter.disconnect();gain.disconnect();};
     source.start(now);
   }
-  function musicBeat(){
-    if(!audible() || ctx?.state!=='running') return;
-    const chord=chords[Math.floor(beat/8)%chords.length],now=ctx.currentTime+.025;
-    if(beat%8===0) chord.forEach(hz=>tone(hz/2,now,3.2,.008));
-    const note=chord[[0,2,1,3,2,1,0,2][beat%8]];
-    if (current !== endingIndex || beat % 2 === 0) tone(note,now,current >= 4 ? 1.8 : 1.25,current === endingIndex ? .012 : .019);
-    if (current === 4 && beat%4 === 0) tone(note*2,now+.12,1.45,.006);
-    beat++;
-  }
-  function stopBeat(){
-    clearInterval(interval);interval=null;
-    for(const osc of voices) {try {osc.stop();} catch { /* 已结束 */ }}
-    voices.clear();
-  }
-  function updateAudio(){
-    const playing=audible() && ctx?.state==='running';
-    if(playing && interval===null) {musicBeat();interval=setInterval(musicBeat,550);}
-    if(!playing) stopBeat();
-    put('soundLabel',playing?'音乐开':'音乐关');
-    $('soundBtn').setAttribute('aria-pressed',String(!!playing));
-    $('soundBtn').setAttribute('aria-label',playing?'关闭背景音乐':'开启背景音乐');
-  }
-  async function syncAudio(){
-    const request=++audioRequest;
-    try {
-      if(audible()){
-        if(!ctx){
-          const Audio=window.AudioContext || window.webkitAudioContext;
-          if(!Audio) throw new Error('audio unavailable');
-          ctx=new Audio();
-          ctx.addEventListener('statechange',updateAudio);
-        }
-        await ctx.resume();
-      } else {
-        stopBeat();
-        if(ctx && ctx.state!=='closed') await ctx.suspend();
-      }
-    } catch {
-      if(request===audioRequest){wantsSound=false;toast('当前无法播放背景音，仍可继续阅读。');}
-    }
-    if(request===audioRequest) updateAudio();
-  }
-  $('soundBtn').addEventListener('click',()=>{
-    // 系统音频中断后，再次触摸可恢复。
-    wantsSound=!!(wantsSound && ctx?.state==='interrupted') || !wantsSound;
-    syncAudio();
-  });
-  document.addEventListener('visibilitychange',syncAudio);
-  window.addEventListener('pagehide',()=>{pageAway=true;syncAudio();clearSceneTimers();});
-  window.addEventListener('pageshow',()=>{pageAway=false;syncAudio();if(current===1) revealLetter();});
+  window.addEventListener('pagehide', clearSceneTimers);
+  window.addEventListener('pageshow', () => { if (current === 1) revealLetter(); });
   $('playStory').disabled = false;
   showScene(location.hash === '#menu' ? scenes.indexOf($('menu')) : 0, false);
 })();

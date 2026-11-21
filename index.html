@@ -19,9 +19,11 @@
   <script defer src="js/config.js?v=letters2"></script>
   <script defer src="js/invitation.js?v=letters2"></script>
   <script defer src="js/keepsake.js?v=director1"></script>
-  <script defer src="js/app.js?v=letters2"></script>
+  <script defer src="js/piano.js?v=piano1"></script>
+  <script defer src="js/app.js?v=piano1"></script>
 </head>
 <body data-act="0">
+  <audio id="piano" src="assets/audio/liebestraum-3.m4a" preload="none" loop></audio>
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
     <symbol id="disc" viewBox="0 0 40 40"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="18"/><circle cx="20" cy="20" r="14.5"/><circle cx="20" cy="20" r="11"/><circle cx="20" cy="20" r="7.3"/><path d="M5 14a16 16 0 0 1 12-10m7 31a16 16 0 0 0 12-13"/></g><circle cx="20" cy="20" r="3.2" fill="currentColor"/></symbol>
     <symbol id="star" viewBox="0 0 24 24"><path d="M12 0c.7 9.4 2.6 11.2 12 12-9.4.8-11.3 2.6-12 12C11.3 14.6 9.4 12.8 0 12c9.4-.8 11.3-2.6 12-12Z" fill="currentColor"/></symbol>
@@ -29,14 +31,14 @@
   <div class="sky" aria-hidden="true"></div>
   <header class="site-header frame">
     <a class="brand" id="brandHome" href="#intro" aria-label="Ricky Records，返回封面"><svg aria-hidden="true"><use href="#disc"/></svg><span>Ricky <i>Records</i></span></a>
-    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="开启背景音乐"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">音乐关</span></button></div>
+    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="播放李斯特《爱之梦》第三首" title="李斯特 · 爱之梦第三首"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">点按播放</span></button></div>
   </header>
   <main id="app" class="frame">
     <section id="intro" class="scene active" aria-labelledby="introTitle">
       <div class="intro-layout">
         <div class="intro-copy">
           <p class="eyebrow"><span class="rule"></span>第一幕 <span class="slash">/</span> 黑胶序曲</p>
-          <h1 id="introTitle" tabindex="-1">见个面，<br><em>慢慢聊。</em></h1>
+          <h1 id="introTitle" tabindex="-1">The Night<br>We Haven’t<br><em>Written Yet.</em></h1>
           <p class="hero-chinese">有些故事，从一顿晚餐开始。</p>
           <div class="play-row"><button id="playStory" disabled class="primary-btn" type="button"><span class="play-icon" aria-hidden="true"></span>播放这段故事</button><span class="duration mono">约 1 分钟</span></div>
           <p id="inviteStatus" class="invite-status" role="status">正在打开封套…</p>
