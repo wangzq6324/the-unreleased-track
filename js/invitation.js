@@ -8,7 +8,10 @@ async function openInvitation(settings) {
     status.textContent = message;
     return {config: settings, key: ''};
   };
-  if (key === null) return preview('公开试听 · 专属邀请请从收到的完整链接打开。');
+  if (key === null) {
+    if (location.protocol === 'file:' && settings.toName && settings.toName !== '你') return preview('本机预览 · 提交回复请打开专属邀请链接。');
+    return preview('公开试听 · 专属邀请请从收到的完整链接打开。');
+  }
   if (!/^[-_A-Za-z0-9]{32}$/.test(key)) return preview('邀请链接不完整。可以先试听，或请邀请人重发。');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 7000);
