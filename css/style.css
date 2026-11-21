@@ -351,3 +351,7 @@ body[data-act="3"] {background-color:#332831;--accent:#e1bba4}
 .label {background:transparent;box-shadow:none;color:#301f26}
 .orbit-score {opacity:.29}
 @media(max-width:620px){.sleeve{background-image:url('../assets/images/hero-mobile.webp');background-size:170.5% 112.2%;background-position:0 38%}}
+
+.record-credit {margin:.5rem 0;color:var(--quiet);font-size:12px;line-height:1.7}
+.record-credit summary {width:fit-content;cursor:pointer;padding:.65rem 0}
+.record-credit a {color:inherit;text-decoration:underline}

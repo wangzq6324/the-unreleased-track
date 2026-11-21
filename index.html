@@ -15,7 +15,7 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/images/hero-mobile.webp" media="(max-width:620px)">
   <link rel="preload" as="image" href="assets/images/hero.webp" media="(min-width:621px)">
-  <link rel="stylesheet" href="css/style.css?v=letter3">
+  <link rel="stylesheet" href="css/style.css?v=goldstein1">
   <script defer src="js/config.js?v=letters2"></script>
   <script defer src="js/invitation.js?v=letters2"></script>
   <script defer src="js/keepsake.js?v=director1"></script>
@@ -23,7 +23,7 @@
   <script defer src="js/app.js?v=letter3"></script>
 </head>
 <body data-act="0">
-  <audio id="piano" src="assets/audio/liebestraum-3.m4a" preload="none" loop></audio>
+  <audio id="piano" src="assets/audio/liebestraum-3.m4a?v=goldstein1" preload="none" loop></audio>
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
     <symbol id="disc" viewBox="0 0 40 40"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="18"/><circle cx="20" cy="20" r="14.5"/><circle cx="20" cy="20" r="11"/><circle cx="20" cy="20" r="7.3"/><path d="M5 14a16 16 0 0 1 12-10m7 31a16 16 0 0 0 12-13"/></g><circle cx="20" cy="20" r="3.2" fill="currentColor"/></symbol>
     <symbol id="star" viewBox="0 0 24 24"><path d="M12 0c.7 9.4 2.6 11.2 12 12-9.4.8-11.3 2.6-12 12C11.3 14.6 9.4 12.8 0 12c9.4-.8 11.3-2.6 12-12Z" fill="currentColor"/></symbol>
@@ -31,7 +31,7 @@
   <div class="sky" aria-hidden="true"></div>
   <header class="site-header frame">
     <a class="brand" id="brandHome" href="#intro" aria-label="Ricky Records，返回封面"><svg aria-hidden="true"><use href="#disc"/></svg><span>Ricky <i>Records</i></span></a>
-    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="播放李斯特《爱之梦》第三首" title="李斯特 · 爱之梦第三首"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">点按播放</span></button></div>
+    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="播放李斯特《爱之梦》第三首" title="李斯特《爱之梦》第三首 · Martha Goldstein 演奏"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">点按播放</span></button></div>
   </header>
   <main id="app" class="frame">
     <section id="intro" class="scene active" aria-labelledby="introTitle">
@@ -137,6 +137,9 @@
   <footer class="frame"><div class="footer-rule mono"><span>曲目表</span><span id="actCount">01 / 06</span></div>
     <nav class="tracks" aria-label="已读曲目导航"></nav>
     <div class="colophon mono"><span>RICKY RECORDS</span><svg aria-hidden="true"><use href="#star"/></svg><span>PRIVATE PRESSING</span></div>
+    <details class="record-credit"><summary>钢琴录音</summary>
+      <p>李斯特《爱之梦》第三首 · Martha Goldstein 演奏<br>Al Goldstein Collection / Pandora Music · 原速，AAC 转码<br><a href="https://commons.wikimedia.org/wiki/File:Franz_Liszt_-_Liebestraum,_Ab_Major.ogg" rel="noreferrer" target="_blank">录音来源</a> · <a href="https://creativecommons.org/licenses/by-sa/2.0/" rel="noreferrer" target="_blank">CC BY-SA 2.0</a></p>
+    </details>
   </footer>
   <div id="toast" class="toast" role="status"></div>
   <noscript>请启用 JavaScript，打开这张唱片。</noscript>
