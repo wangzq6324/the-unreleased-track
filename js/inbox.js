@@ -8,6 +8,23 @@
   } else {
     try { key = sessionStorage.getItem('ricky-mail-key') || ''; } catch {}
   }
+  function renderReply(reply) {
+    const details = [
+      ['回应',{yes:'好呀，我赴约',later:'我们换个时间',no:'这次先不了'}[reply.answer]],
+      ['口味',reply.answer==='no' ? '' : reply.food || '见面再决定'],
+      ['晚餐时间',[reply.date,reply.time].filter(Boolean).join(' · ')],
+      ['建议日期',reply.alternate],
+      ['提交时间',new Date(reply.received).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) + '（北京时间）']
+    ];
+    const list = document.createElement('dl');
+    for (const [name,value] of details) if (value) {
+      const term=document.createElement('dt'), desc=document.createElement('dd');
+      term.textContent=name;desc.textContent=value;list.append(term,desc);
+    }
+    const item = document.createElement('li');
+    item.append(list);
+    return item;
+  }
   let loading = false;
   async function readMail() {
     if (loading) return;
@@ -23,24 +40,13 @@
         $('mailStatus').textContent='查看码不匹配，请重新输入。'; return;
       }
       if (!response.ok) throw new Error('read failed');
-      const {reply, toName = config.toName} = await response.json();
+      const {replies: history, reply, toName = config.toName} = await response.json();
+      const replies = history ?? (reply ? [reply] : []);
       try { sessionStorage.setItem('ricky-mail-key',key); } catch {}
       $('login').hidden=true; $('reloadMail').hidden=false;
-      $('mailStatus').textContent = reply ? toName + ' 的最新回复' : '还没有收到 ' + toName + ' 的回复。';
-      if (!reply) return;
-      const details = [
-        ['回应',{yes:'好呀，我赴约',later:'我们换个时间',no:'这次先不了'}[reply.answer]],
-        ['口味',reply.answer==='no' ? '' : reply.food || '见面再决定'],
-        ['晚餐时间',[reply.date,reply.time].filter(Boolean).join(' · ')],
-        ['建议日期',reply.alternate],
-        ['提交时间',new Date(reply.received).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) + '（北京时间）']
-      ];
-      $('mailDetails').replaceChildren();
-      for (const [name,value] of details) if (value) {
-        const term=document.createElement('dt'), desc=document.createElement('dd');
-        term.textContent=name;desc.textContent=value;$('mailDetails').append(term,desc);
-      }
-      $('mailDetails').hidden=false;
+      $('mailStatus').textContent = replies.length ? toName + ' 的回复 · 最近 ' + replies.length + ' 条' : '还没有收到 ' + toName + ' 的回复。';
+      $('mailDetails').replaceChildren(...replies.map(renderReply));
+      $('mailDetails').hidden = !replies.length;
     } catch {
       $('mailStatus').textContent='暂时无法连接收件页，请稍后重试。';
     } finally { clearTimeout(timer); loading=false; }
