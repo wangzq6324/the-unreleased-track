@@ -31,6 +31,7 @@
     loading = true;
     $('mailStatus').textContent = '正在查看…';
     $('mailDetails').hidden = true;
+    $('visitHistory').hidden = true;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
     try {
@@ -40,13 +41,25 @@
         $('mailStatus').textContent='查看码不匹配，请重新输入。'; return;
       }
       if (!response.ok) throw new Error('read failed');
-      const {replies: history, reply, toName = config.toName} = await response.json();
+      const {replies: history, reply, visits = [], toName = config.toName} = await response.json();
       const replies = history ?? (reply ? [reply] : []);
       try { sessionStorage.setItem('ricky-mail-key',key); } catch {}
       $('login').hidden=true; $('reloadMail').hidden=false;
       $('mailStatus').textContent = replies.length ? toName + ' 的回复 · 最近 ' + replies.length + ' 条' : '还没有收到 ' + toName + ' 的回复。';
       $('mailDetails').replaceChildren(...replies.map(renderReply));
       $('mailDetails').hidden = !replies.length;
+      $('visitList').replaceChildren(...visits.map(visit => {
+        const item = document.createElement('li');
+        const time = document.createElement('time');
+        time.dateTime = visit.opened;
+        time.textContent = new Date(visit.opened).toLocaleString('zh-CN', {timeZone:'Asia/Shanghai',hour12:false});
+        const network = document.createElement('span');
+        network.textContent = visit.network || '网段未知';
+        item.append(time, network);
+        return item;
+      }));
+      $('visitEmpty').hidden = visits.length > 0;
+      $('visitHistory').hidden = false;
     } catch {
       $('mailStatus').textContent='暂时无法连接收件页，请稍后重试。';
     } finally { clearTimeout(timer); loading=false; }

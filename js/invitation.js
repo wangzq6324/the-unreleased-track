@@ -25,7 +25,10 @@ async function openInvitation(settings) {
     if (!response.ok) throw new Error('unavailable');
     const {invitation} = await response.json();
     if (!invitation || !invitation.toName) throw new Error('incomplete invitation');
-    status.hidden = true;
+    status.textContent = '打开这张邀请会记下时间和脱敏 IP 网段，仅邀请人可查看。';
+    if (location.protocol === 'https:' || location.protocol === 'http:') {
+      recordVisibleVisit(settings.replyService, key);
+    }
     return {config:{...settings, ...invitation, replyService:settings.replyService}, key};
   } catch {
     const retry = document.getElementById('inviteRetry');
@@ -33,4 +36,22 @@ async function openInvitation(settings) {
     retry.addEventListener('click', () => location.reload());
     return preview('专属邀请暂时未能载入。可以重试，或先试听公开版本。');
   } finally { clearTimeout(timer); }
+}
+
+function recordVisibleVisit(service, key) {
+  function whenVisible() {
+    if (document.visibilityState !== 'visible' || document.prerendering) return;
+    document.removeEventListener('visibilitychange', whenVisible);
+    document.removeEventListener('prerenderingchange', whenVisible);
+    // Only a visible, authenticated invitation counts. Chapter changes reuse this document.
+    const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2,'0')).join('');
+    fetch(service + '/visit', {
+      method:'POST', headers:{Authorization:'Bearer ' + key, 'Content-Type':'application/json'},
+      body:JSON.stringify({id}), credentials:'omit', cache:'no-store', referrerPolicy:'no-referrer',
+      keepalive:true
+    }).catch(() => {});
+  }
+  document.addEventListener('visibilitychange', whenVisible);
+  document.addEventListener('prerenderingchange', whenVisible);
+  whenVisible();
 }

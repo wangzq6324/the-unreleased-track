@@ -365,3 +365,10 @@ body[data-act="3"] {background-color:#332831;--accent:#e1bba4}
 .record-credit {margin:.5rem 0;color:var(--quiet);font-size:12px;line-height:1.7}
 .record-credit summary {width:fit-content;cursor:pointer;padding:.65rem 0}
 .record-credit a {color:inherit;text-decoration:underline}
+
+#visitHistory {margin:2rem 0}
+#visitHistory h2 {font:500 24px/1.4 "Songti SC",serif}
+.visit-note,#visitEmpty {color:var(--quiet);margin:.6rem 0}
+#visitList {padding:0;list-style:none}
+#visitList li {display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;border-top:1px solid var(--rule);padding:12px 0;font-size:14px}
+#visitList span {font-family:var(--mono);color:var(--accent);overflow-wrap:anywhere}

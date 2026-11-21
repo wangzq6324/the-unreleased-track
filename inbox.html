@@ -1,6 +1,9 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow"><title>Ricky · 晚餐收件页</title><link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="css/style.css?v=inbox10"><script defer src="js/config.js?v=director1"></script><script defer src="js/inbox.js?v=inbox10"></script></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow"><title>Ricky · 晚餐收件页</title><link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="css/style.css?v=visits1"><script defer src="js/config.js?v=director1"></script><script defer src="js/inbox.js?v=visits1"></script></head>
 <body><main class="frame"><section class="mailbox"><p class="eyebrow">RICKY 唱片 / 私人来信</p><h1>晚餐<em>收件箱</em></h1>
 <form id="login"><label for="mailKey">Ricky 的查看码</label><input id="mailKey" type="password" autocomplete="current-password" required><button class="primary-btn">查看回复</button></form>
-<p id="mailStatus" role="status"></p><button id="reloadMail" class="secondary-btn" hidden>刷新回复</button><ol id="mailDetails" aria-label="按提交时间倒序排列的回复" hidden></ol>
-</section></main></body></html>
+<p id="mailStatus" role="status"></p><button id="reloadMail" class="secondary-btn" hidden>刷新收件页</button><ol id="mailDetails" aria-label="按提交时间倒序排列的回复" hidden></ol>
+<section id="visitHistory" hidden aria-labelledby="visitTitle">
+<h2 id="visitTitle">最近打开</h2><p class="visit-note">北京时间 · 来源 IP 网段 · 最多保留 10 次</p>
+<p id="visitEmpty">还没有记录到打开。</p><ol id="visitList" aria-label="按时间倒序排列的打开记录"></ol>
+</section></section></main></body></html>
