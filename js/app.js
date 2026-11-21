@@ -11,7 +11,8 @@
   const time = read('time') || undecided;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const scenes = Array.from(document.querySelectorAll('.scene'));
-  const chapters = ['The Intro', 'The Lyrics', 'The Date', 'The Choice', 'Bonus Track'];
+  const chapters = ['The Intro', 'The Lyrics', 'The Date', 'The Menu', 'The Choice', 'Bonus Track'];
+  const endingIndex = scenes.indexOf($('ending'));
   let current = 0;
   let furthest = 0;
   let answer = '';
@@ -28,6 +29,36 @@
   put('timeText', time);
   put('personalLine', read('personalLine'));
   $('personalLine').hidden = !read('personalLine');
+  if (read('date')) put('invitationWhen', read('date') + read('time') + '，');
+  put('menuQuestion', toName + '，想吃点什么？');
+  put('menuFrom', fromName);
+  const foodOptions = Array.isArray(config.foodOptions) ? config.foodOptions : ['火锅', '烤肉'];
+  function addFood(label, kind) {
+    const row = document.createElement('label');
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'food';
+    radio.value = label;
+    radio.dataset.kind = kind;
+    radio.addEventListener('change', () => {
+      $('dishWriteIn').hidden = kind !== 'custom';
+      if (kind === 'custom') $('customDish').focus();
+    });
+    const title = document.createElement('span');
+    title.textContent = label;
+    row.append(radio, title);
+    $('dishList').append(row);
+  }
+  for (const food of new Set(foodOptions)) {
+    if (typeof food === 'string' && food.trim()) addFood(food.trim(), 'preset');
+  }
+  addFood('我有别的想法', 'custom');
+  addFood('见面再决定', 'open');
+  function dinnerFood() {
+    const selected = $('dishList').querySelector('input:checked');
+    if (selected?.dataset.kind === 'custom') return $('customDish').value.trim();
+    return selected?.dataset.kind === 'preset' ? selected.value : '';
+  }
   const lines = [...document.querySelectorAll('.line')].filter(el => !el.hidden);
   lines.forEach((el, i) => el.style.setProperty('--delay', (i * .61) + 's'));
 
@@ -49,12 +80,15 @@
     btn.addEventListener('click', () => {
       preferredDate = preferredDate === date ? '' : date;
       put('dateText', dinnerDate());
+      put('menuWhen', dinnerDate() + read('time'));
       for (const item of $('candidateList').children) item.setAttribute('aria-pressed', String(item.textContent === preferredDate));
     });
     $('candidateList').append(btn);
   }
   $('dateOptions').hidden = !dates.length;
   put('dateText', dinnerDate());
+
+  put('menuWhen', dinnerDate() + read('time'));
 
   const tracks = chapters.map((name, index) => {
     const btn = document.createElement('button');
@@ -98,8 +132,8 @@
     clearSceneTimers();
     current = index;
     // 回到选择或更早的一幕，就要重新作答才能打开相应结尾。
-    furthest = index === 4 ? 4 : Math.max(Math.min(furthest, 3), index);
-    if (index !== 4) tracks[4].lastChild.textContent = chapters[4];
+    furthest = index === endingIndex ? endingIndex : Math.max(Math.min(furthest, endingIndex - 1), index);
+    if (index !== endingIndex) tracks[endingIndex].lastChild.textContent = chapters[endingIndex];
     document.body.dataset.act = String(index);
     if (focus) document.body.classList.add('has-entered');
     scenes.forEach((scene, i) => {
@@ -110,7 +144,7 @@
       if (i === index) tracks[i].setAttribute('aria-current', 'step');
       else tracks[i].removeAttribute('aria-current');
     });
-    put('actCount', '0' + (index + 1) + ' / 05');
+    put('actCount', '0' + (index + 1) + ' / 0' + scenes.length);
     if (index === 1) {
       $('lyrics').classList.toggle('revealed', reduced.matches);
       $('skipLetter').hidden = reduced.matches;
@@ -201,8 +235,8 @@
     const accepted = kind === 'yes';
     const [title, message, action] = endings[kind];
     put('endingTitle', title);
-    put('endingAct', accepted ? 'ACT 05 / BONUS TRACK' : 'ACT 05 / OUTRO');
-    tracks[4].lastChild.textContent = accepted ? chapters[4] : 'The Outro';
+    put('endingAct', accepted ? 'ACT 06 / BONUS TRACK' : 'ACT 06 / OUTRO');
+    tracks[endingIndex].lastChild.textContent = accepted ? chapters[endingIndex] : 'The Outro';
     put('endingMessage', message);
     put('copyReplyBtn', action);
     put('copyStatus', '');
@@ -218,11 +252,11 @@
       if (!reduced.matches) {
         transitioning = true;
         $('choice').classList.add('accepting');
-        transitionTimer = setTimeout(() => showScene(4), 1000);
+        transitionTimer = setTimeout(() => showScene(endingIndex), 1000);
         return;
       }
     }
-    showScene(4);
+    showScene(endingIndex);
   }
 
   function renderTicket() {
@@ -244,11 +278,12 @@
     }
     const fields = [
       ['FROM  /  邀请人', fromName], ['FOR  /  收件人', toName],
-      ['WHEN  /  晚餐', dinnerDate() + (time !== undecided ? ' · ' + time : '')], ['WHERE  /  餐厅', restaurant]
+      ['WHEN  /  晚餐', dinnerDate() + (time !== undecided ? ' · ' + time : '')], ['WHERE  /  餐厅', restaurant],
+      ['MENU  /  想吃', dinnerFood() || '见面再决定']
     ].map(([label, value]) => [label, wrap(value, 635)]);
     const firstHeight = 132 + Math.max(fields[0][1].length,fields[1][1].length)*67;
     const secondHeight = 122 + Math.max(fields[2][1].length,fields[3][1].length)*67;
-    canvas.height = 650 + firstHeight + secondHeight;
+    canvas.height = 650 + firstHeight + secondHeight + 110 + fields[4][1].length * 67;
     const h = canvas.height, c = canvas.getContext('2d'), cut = 1506;
     function type(text, x, y, font, color) { c.fillStyle = color; c.font = font; c.fillText(text, x, y); }
     function line(x,y,xx,yy,color) {
@@ -265,7 +300,7 @@
     type('The Unreleased',70,300,'138px Georgia',cream);
     type('Track',74,437,'italic 148px Georgia',gold);
     fields.forEach(([label, rows], i) => {
-      const x=76+(i%2)*694, y=541+(i>1?firstHeight:0);
+      const x=76+(i%2)*694, y=541+(i>1?firstHeight:0)+(i>3?secondHeight:0);
       type(label,x,y,'29px monospace',gold);
       rows.forEach((s,j)=>type(s,x,y+76+j*67,textStyle,cream));
     });
@@ -292,7 +327,7 @@
     for(let i=0;i<44;i++){c.fillStyle=ink;const width=1+(i*13%5);c.fillRect(bx,h-134,width,65);bx+=width+2;}
     const url=canvas.toDataURL('image/png');
     $('ticketImage').src=url;
-    $('ticketImage').alt='The Unreleased Track，'+fromName+' 与 '+toName+' 的晚餐票根。'+dinnerDate()+'，'+time+'，'+restaurant+'。NO. 0013，ONE OF ONE。';
+    $('ticketImage').alt='The Unreleased Track，'+fromName+' 与 '+toName+' 的晚餐票根。'+dinnerDate()+'，'+time+'，'+restaurant+'。想吃：'+(dinnerFood() || '见面再决定')+'。NO. 0013，ONE OF ONE。';
     $('saveTicketBtn').href=url;
   }
 
@@ -310,11 +345,12 @@
     const kind=answer;
     const key={yes:'replyYes',later:'replyLater',no:'replyNo'}[kind];
     let message=read(key) || {yes:'好呀，我赴约。',later:'我们换个时间吧。',no:'谢谢邀请，这次先不了。'}[kind];
-    if (kind==='yes' && preferredDate) message+=' 我更喜欢的日期是 '+preferredDate+'。';
+    if (kind==='yes' && dinnerDate() !== undecided) message+=' '+dinnerDate()+(read('time') || '')+'见。';
+    if (kind==='yes' && dinnerFood()) message+=' 我想吃'+dinnerFood()+'。';
     if (kind==='later' && $('alternateDate').value) message+=' 我方便的日期是 '+$('alternateDate').value+'。';
     let ok=false;
     try { ok=await clipboard(message); } catch { /* 保留手动复制路径 */ }
-    if (current!==4 || answer!==kind) return;
+    if (current!==endingIndex || answer!==kind) return;
     put('copyStatus',ok?'已复制，可粘贴到聊天框。':'请长按或选中复制：'+message);
   });
 
@@ -382,5 +418,5 @@
   document.addEventListener('visibilitychange',syncAudio);
   window.addEventListener('pagehide',()=>{pageAway=true;syncAudio();clearSceneTimers();});
   window.addEventListener('pageshow',()=>{pageAway=false;syncAudio();if(current===1) revealLetter();});
-  showScene(0,false);
+  showScene(location.hash === '#menu' ? scenes.indexOf($('menu')) : 0, false);
 })();

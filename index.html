@@ -7,9 +7,9 @@
   <meta name="description" content="The Unreleased Track，一张私人唱片，一封晚餐邀请。">
   <title>The Unreleased Track · Rickydog Records</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css">
-  <script defer src="js/config.js"></script>
-  <script defer src="js/app.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=menu1">
+  <script defer src="js/config.js?v=menu1"></script>
+  <script defer src="js/app.js?v=menu1"></script>
 </head>
 <body data-act="0">
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -67,7 +67,7 @@
         <div class="lyrics-lines">
           <p class="line">比起继续在聊天框里说晚安，</p><p class="line">我更想找一个晚上，</p><p class="line">坐在你对面，慢慢聊天。</p>
           <p class="line stanza">或许我们可以找一家不错的餐厅，</p><p class="line">点一些喜欢的东西，</p><p class="line">然后把时间浪费在一些有趣的话题上。</p>
-          <p class="line stanza">所以，这个周末，</p><p class="line">要不要和我一起吃顿饭？</p><p class="line stanza" id="personalLine" hidden></p>
+          <p class="line stanza"><span id="invitationWhen">所以，这个周末，</span></p><p class="line">要不要和我一起吃顿饭？</p><p class="line stanza" id="personalLine" hidden></p>
         </div>
         <div class="paper-last"><p class="signature line">Yours,<br><em id="fromSignature"></em></p><svg class="stamp" aria-hidden="true"><use href="#disc"/></svg></div>
       </div><div class="scene-actions"><button data-back="0" class="subtle">返回封面</button><button id="skipLetter" class="subtle">跳过逐行显示</button><button data-next="2" class="primary-btn">打开晚餐门票</button></div></div>
@@ -85,31 +85,49 @@
         </button>
         <p class="flip-hint" id="flipHint">轻点门票，翻看背面</p>
         <fieldset id="dateOptions" hidden><legend>你更喜欢哪个晚上？</legend><div id="candidateList"></div></fieldset>
-        <div class="scene-actions"><button data-back="1" class="subtle">返回信纸</button><button data-next="3" class="primary-btn">回应邀请</button></div>
+        <div class="scene-actions"><button data-back="1" class="subtle">返回信纸</button><button data-next="3" class="primary-btn">选选吃什么</button></div>
+      </div>
+    </section>
+    <section id="menu" class="scene" hidden inert aria-labelledby="menuTitle">
+      <div class="supper">
+        <div class="menu-slip">
+          <div class="menu-edition mono"><span>ACT 04 / THE MENU</span><span id="menuWhen"></span></div>
+          <header class="menu-heading">
+            <div><h2 id="menuTitle" tabindex="-1">À la <em>carte.</em></h2><p id="menuQuestion"></p></div>
+            <svg class="supper-seal" viewBox="0 0 72 72" aria-hidden="true" fill="none" stroke="currentColor">
+              <circle cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="26.5" stroke-dasharray="1 3"/>
+              <g transform="rotate(-9 36 36)" stroke-linecap="round"><path d="M17 42h38m-35-3a16 16 0 0 1 32 0Zm14-17a2 2 0 1 1 4 0M28 32q2-4 7-5M24 46h24"/></g>
+            </svg>
+          </header>
+          <fieldset class="dish-field"><legend>选一个想吃的，也可以见面再定。</legend><div class="dish-list" id="dishList"></div></fieldset>
+          <label id="dishWriteIn" hidden>想吃什么？<input id="customDish" maxlength="36" type="text" placeholder="写下菜名或口味"></label>
+          <div class="menu-sign"><span>Bon appétit,</span> <i id="menuFrom"></i></div>
+        </div>
+        <div class="scene-actions"><button class="subtle" data-back="2">返回门票</button><button class="primary-btn" data-next="4">回应邀请</button></div>
       </div>
     </section>
     <section id="choice" class="scene" hidden inert aria-labelledby="choiceTitle">
-      <div class="center-layout"><p class="eyebrow">ACT 04 / THE CHOICE</p><div class="choice-mark" aria-hidden="true">
+      <div class="center-layout"><p class="eyebrow">ACT 05 / THE CHOICE</p><div class="choice-mark" aria-hidden="true">
         <svg class="constellation" viewBox="0 0 360 105" fill="none">
           <path pathLength="1" d="M7 76 39 58 84 70 112 38 151 43 180 52 205 32 242 46 275 18 315 31 348 9"/>
           <g fill="currentColor"><circle cx="7" cy="76" r="1.7"/><circle cx="39" cy="58" r="2.4"/><circle cx="84" cy="70" r="1.7"/><circle cx="112" cy="38" r="2.2"/><circle cx="151" cy="43" r="1.7"/><circle cx="205" cy="32" r="2"/><circle cx="242" cy="46" r="1.7"/><circle cx="275" cy="18" r="2.6"/><circle cx="315" cy="31" r="1.7"/><circle cx="348" cy="9" r="2.2"/></g>
         </svg><svg><use href="#star"/></svg><i>✦</i><i>✧</i><i>✦</i><i>✧</i></div><h2 class="headline" id="choiceTitle" tabindex="-1">Shall we make<br><em>this one happen?</em></h2>
-        <p class="subtitle">要不要，让这个故事真的发生？</p><div class="choices"><button data-answer="yes" class="primary-btn">好呀，我赴约</button><button data-answer="later" class="secondary-btn">我们换个时间</button><button data-answer="no" class="subtle">这次先不了</button></div><button class="subtle" data-back="2">返回门票</button>
+        <p class="subtitle">要不要，让这个故事真的发生？</p><div class="choices"><button data-answer="yes" class="primary-btn">好呀，我赴约</button><button data-answer="later" class="secondary-btn">我们换个时间</button><button data-answer="no" class="subtle">这次先不了</button></div><button class="subtle" data-back="3">返回菜单</button>
       </div>
     </section>
     <section id="ending" class="scene" hidden inert aria-labelledby="endingTitle">
-      <div class="center-layout"><p id="endingAct" class="eyebrow">ACT 05 / BONUS TRACK</p><h2 id="endingTitle" class="headline" tabindex="-1"></h2><p id="endingMessage" class="subtitle"></p>
+      <div class="center-layout"><p id="endingAct" class="eyebrow">ACT 06 / BONUS TRACK</p><h2 id="endingTitle" class="headline" tabindex="-1"></h2><p id="endingMessage" class="subtitle"></p>
         <figure class="ending-card" id="keepsakeCard"><img id="ticketImage" alt="专属晚餐纪念票根"></figure>
         <p class="save-tip" id="saveTip">手机可长按上方票根保存图片</p>
         <label id="alternateWrap" hidden>你方便的另一个晚上<input id="alternateDate" type="date"></label>
         <div class="ending-actions"><button id="copyReplyBtn" class="primary-btn"></button><a id="saveTicketBtn" class="secondary-btn" download="Rickydog-0013.png">下载高清 PNG</a></div>
         <p id="copyStatus" class="copy-status" role="status"></p><p id="replyNote" class="fine"></p>
         <div id="closingQuote" class="closing-quote"><i>We don't know the ending yet.<br>But I'd love to see how this chapter begins.</i><p>我们还不知道故事的结局。<br>但我很想知道，和你有关的这一章，会怎样开始。</p></div>
-        <div class="scene-actions"><button data-back="3" class="subtle">返回选择</button><button data-back="0" class="subtle">重看邀请函</button></div>
+        <div class="scene-actions"><button data-back="4" class="subtle">返回选择</button><button data-back="0" class="subtle">重看邀请函</button></div>
       </div>
     </section>
   </main>
-  <footer class="frame"><div class="footer-rule mono"><span>TRACKLIST</span><span id="actCount">01 / 05</span></div>
+  <footer class="frame"><div class="footer-rule mono"><span>TRACKLIST</span><span id="actCount">01 / 06</span></div>
     <nav class="tracks" aria-label="已读曲目导航"></nav>
     <div class="colophon mono"><span>RICKYDOG RECORDS</span><svg aria-hidden="true"><use href="#star"/></svg><span>PRIVATE PRESSING</span></div>
   </footer>
