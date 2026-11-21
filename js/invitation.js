@@ -25,7 +25,7 @@ async function openInvitation(settings) {
     if (!response.ok) throw new Error('unavailable');
     const {invitation} = await response.json();
     if (!invitation || !invitation.toName) throw new Error('incomplete invitation');
-    status.textContent = '打开这张邀请会记下时间和脱敏 IP 网段，仅邀请人可查看。';
+    status.hidden = true;
     if (location.protocol === 'https:' || location.protocol === 'http:') {
       recordVisibleVisit(settings.replyService, key);
     }
