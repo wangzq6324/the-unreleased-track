@@ -2,7 +2,7 @@
   'use strict';
   const piano = document.getElementById('piano');
   const toggle = document.getElementById('soundBtn');
-  const label = document.getElementById('soundLabel');
+  const credit = document.getElementById('soundCredit');
   let enabled = true;
   let away = false;
   let pending = false;
@@ -12,9 +12,9 @@
 
   function update() {
     const playing = enabled && !piano.paused && !piano.error;
-    label.textContent = playing ? '音乐开' : failed ? '重试音乐' : enabled ? '点按播放' : '音乐关';
+    credit.textContent = failed ? '李斯特 · 点按重试' : '李斯特 · 钢琴独奏';
     toggle.setAttribute('aria-pressed', String(playing));
-    toggle.setAttribute('aria-label', (playing ? '暂停' : '播放') + '李斯特《爱之梦》第三首');
+    toggle.setAttribute('aria-label', (failed ? '重新播放' : playing ? '暂停' : '播放') + '李斯特《爱之梦》第三首');
   }
 
   function sync() {

@@ -37,6 +37,14 @@ h1:focus,h2:focus {outline:none}
 .meter {display:inline-flex;align-items:center;gap:2px;height:16px;color:var(--accent)}
 .meter b {width:2px;height:6px;background:currentColor}
 .meter b:nth-child(2){height:11px}.meter b:nth-child(3){height:15px}.meter b:nth-child(4){height:9px}
+#soundBtn {gap:6px;min-width:132px;min-height:44px;justify-content:flex-end}
+.sound .meter {width:18px;justify-content:center;transform:scale(.78);transform-origin:right center}
+.sound[aria-pressed="false"] .meter b {display:none}
+.sound[aria-pressed="false"] .meter:after {content:"";border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent currentColor}
+#soundLabel {display:grid;gap:2px;text-align:left}
+#soundLabel strong {font:500 13px/1.15 "Songti SC","STSong",serif;color:var(--text);letter-spacing:.035em}
+#soundLabel strong span {font-size:.78em}
+#soundLabel small {font:9px/1.2 "Songti SC","STSong",serif;letter-spacing:.065em;color:var(--accent)}
 .sound[aria-pressed="true"] b {animation:meter .8s ease-in-out infinite alternate}
 .sound[aria-pressed="true"] b:nth-child(even){animation-delay:-.4s}
 @keyframes meter {from{transform:scaleY(.4)}to{transform:scaleY(1)}}
@@ -158,7 +166,7 @@ body:has(.accepting){background-color:#49323c}
 .ending-actions {margin-top:18px}
 .copy-status:not(:empty) {margin:12px auto 0;max-width:38em;font-size:14px;line-height:1.7;user-select:all}
 .fine {margin-top:12px}
-.closing-quote {margin-top:25px;font:20px/1.25 var(--serif)}.closing-quote p {font:13px/1.8 "Songti SC",serif;margin-top:10px}
+.closing-quote {margin-top:25px;font:20px/1.25 var(--serif)}
 #alternateWrap {display:grid;gap:9px;justify-items:center;margin:24px auto}
 input[type="date"] {border:1px solid var(--rule);background:transparent;color:inherit;border-radius:2px;padding:10px;min-height:44px;max-width:100%}
 .toast {position:fixed;z-index:5;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#292631;color:#f4e6d6;border:1px solid #a5887080;padding:12px 16px;font-size:14px;transition:.2s;width:max-content;max-width:90vw;text-align:center}
