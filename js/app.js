@@ -76,7 +76,7 @@
   let transitioning = false;
 
   document.title = 'The Unreleased Track · ' + fromName;
-  put('recipientLine', toName === '你' ? '给正在读信的你，' : toName + '，');
+  put('recipientLine', toName === '你' ? '给正在读信的你，' : 'Dear ' + toName + ',');
   put('fromSignature', fromName);
   put('ticketFrom', fromName);
   put('placeText', restaurant);
@@ -89,6 +89,8 @@
     const line = document.createElement('p');
     line.className = 'line'; line.textContent = text; body.append(line);
   }
+  const letterDate = document.createElement('p');
+  letterDate.className = 'line stanza letter-date'; body.append(letterDate);
   const question = document.createElement('p');
   question.className = 'line stanza'; body.append(question);
   const lines = [...document.querySelectorAll('.line')];
@@ -143,7 +145,13 @@
   function updateDate() {
     put('dateText', dinnerDate()); put('timeText', dinnerTime() || undecided);
     put('menuWhen', [dinnerDate(), dinnerTime()].filter(Boolean).join(' · '));
-    question.textContent = datePassed() ? '我们再挑一个彼此都有空的晚上，好吗？' : read('date') ? dinnerDate() + dinnerTime() + '，一起吃顿饭，好吗？' : '找个晚上，一起吃顿饭，好吗？';
+    const invitation = read('letterInvitation');
+    const dated = !datePassed() && !!read('date');
+    letterDate.hidden = !invitation || !dated;
+    letterDate.textContent = letterDate.hidden ? '' : dinnerDate() + dinnerTime() + '，';
+    question.classList.toggle('letter-question', !!invitation);
+    question.textContent = datePassed() ? '我们再挑一个彼此都有空的晚上，好吗？' :
+      invitation || (dated ? dinnerDate() + dinnerTime() + '，一起吃顿饭，好吗？' : '找个晚上，一起吃顿饭，好吗？');
     $('dateOptions').hidden = !dates.length || datePassed();
   }
   const dates = Array.isArray(config.candidateDates) ? [...new Set(config.candidateDates)].filter(Boolean).slice(0,3) : [];
