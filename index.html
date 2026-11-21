@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111626">
+  <meta name="description" content="The Unreleased Track，一张私人唱片，一封晚餐邀请。">
+  <title>The Unreleased Track · Rickydog Records</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/config.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body data-act="0">
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="disc" viewBox="0 0 40 40"><g fill="none" stroke="currentColor"><circle cx="20" cy="20" r="18"/><circle cx="20" cy="20" r="14.5"/><circle cx="20" cy="20" r="11"/><circle cx="20" cy="20" r="7.3"/><path d="M5 14a16 16 0 0 1 12-10m7 31a16 16 0 0 0 12-13"/></g><circle cx="20" cy="20" r="3.2" fill="currentColor"/></symbol>
+    <symbol id="star" viewBox="0 0 24 24"><path d="M12 0c.7 9.4 2.6 11.2 12 12-9.4.8-11.3 2.6-12 12C11.3 14.6 9.4 12.8 0 12c9.4-.8 11.3-2.6 12-12Z" fill="currentColor"/></symbol>
+  </defs></svg>
+  <div class="sky" aria-hidden="true"></div>
+  <header class="site-header frame">
+    <a class="brand" id="brandHome" href="#intro" aria-label="Rickydog Records，返回封面"><svg aria-hidden="true"><use href="#disc"/></svg><span>Rickydog <i>Records</i></span></a>
+    <div class="utility"><span class="catalog mono">CAT. Nº 0013</span><button id="soundBtn" class="sound mono" type="button" aria-pressed="false" aria-label="开启背景音乐"><span class="meter" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></span><span id="soundLabel">SOUND OFF</span></button></div>
+  </header>
+  <main id="app" class="frame">
+    <section id="intro" class="scene active" aria-labelledby="introTitle">
+      <div class="intro-layout">
+        <div class="intro-copy">
+          <p class="eyebrow"><span class="rule"></span>ACT 01 <span class="slash">/</span> THE INTRO</p>
+          <h1 id="introTitle" tabindex="-1">The Night<br>We Haven’t<br><em>Written Yet.</em></h1>
+          <p class="hero-chinese">有些故事，从一顿晚餐开始。</p>
+          <div class="play-row"><button id="playStory" class="primary-btn" type="button"><span class="play-icon" aria-hidden="true"></span>播放这段故事</button><span class="duration mono">约 1 分钟</span></div>
+          <button id="skipIntro" class="skip" hidden type="button">跳过开场</button>
+        </div>
+        <figure class="pressing">
+          <div class="assembly">
+            <svg class="orbit-score" viewBox="0 0 600 400" aria-hidden="true">
+              <g fill="none" transform="rotate(-18 320 200)">
+                <ellipse cx="320" cy="200" rx="276" ry="139" pathLength="1"/>
+                <ellipse cx="320" cy="200" rx="284" ry="148" pathLength="1"/>
+              </g>
+              <path d="M25 285q150-43 281-175T570 68" fill="none" pathLength="1"/>
+            </svg>
+            <button class="record" id="record" type="button" aria-label="黑胶唱片，连续轻点十三次有一段隐藏留言">
+              <span class="vinyl"><span class="rings"></span><span class="label"><b>SIDE A</b><i>Rickydog</i><small>33⅓ RPM</small></span></span>
+            </button>
+            <div class="sleeve" aria-hidden="true">
+              <span class="cover-foil"></span><div class="cover-frame"></div><div class="cover-top mono"><span>RICKYDOG RECORDS</span><span>STEREO</span></div>
+              <div class="cover-title">The Unreleased<br><i>Track</i></div>
+              <div class="cover-bottom mono"><span>RD—0013</span><span>PRIVATE PRESSING</span></div>
+            </div>
+            <svg class="tonearm" viewBox="0 0 80 180" aria-hidden="true">
+              <defs><linearGradient id="metal"><stop stop-color="#413e40"/><stop offset=".25" stop-color="#9e9285"/><stop offset=".48" stop-color="#ead6b9"/><stop offset=".72" stop-color="#81776d"/><stop offset="1" stop-color="#403d3b"/></linearGradient></defs>
+              <circle cx="58" cy="18" r="15" fill="#191b22" stroke="#827360"/><circle cx="58" cy="18" r="10" fill="url(#metal)"/><path d="M58 18v68q0 6-4 12l-27 43" fill="none" stroke="#302c29" stroke-width="7"/><path d="M58 18v68q0 6-4 12l-27 43" fill="none" stroke="url(#metal)" stroke-width="4"/><g transform="rotate(34 27 141)"><rect x="22" y="132" width="11" height="22" rx="2" fill="url(#metal)"/><rect x="23" y="150" width="9" height="6" rx="1" fill="#a47b68"/></g><circle cx="58" cy="18" r="3" fill="#d4c2a8"/>
+            </svg>
+          </div>
+          <figcaption class="art-caption mono"><span><i class="pin"></i>SIDE A</span><span>33⅓ RPM <b>·</b> ONE OF ONE</span></figcaption>
+          <p id="artStatus" class="art-status" role="status"></p>
+          <p id="secret" class="secret" role="status"></p>
+        </figure>
+      </div>
+    </section>
+    <section id="lyrics" class="scene" hidden inert aria-labelledby="lyricsTitle">
+      <div class="letter-layout"><div class="paper">
+        <div class="printline mono"><span>RICKYDOG RECORDS</span><span>ACT 02 / LINER NOTES</span></div>
+        <p class="paper-salutation line" id="recipientLine"></p>
+        <h2 id="lyricsTitle" class="line" tabindex="-1">有一段话，想当面说。</h2>
+        <div class="lyrics-lines">
+          <p class="line">比起继续在聊天框里说晚安，</p><p class="line">我更想找一个晚上，</p><p class="line">坐在你对面，慢慢聊天。</p>
+          <p class="line stanza">或许我们可以找一家不错的餐厅，</p><p class="line">点一些喜欢的东西，</p><p class="line">然后把时间浪费在一些有趣的话题上。</p>
+          <p class="line stanza">所以，这个周末，</p><p class="line">要不要和我一起吃顿饭？</p><p class="line stanza" id="personalLine" hidden></p>
+        </div>
+        <div class="paper-last"><p class="signature line">Yours,<br><em id="fromSignature"></em></p><svg class="stamp" aria-hidden="true"><use href="#disc"/></svg></div>
+      </div><div class="scene-actions"><button data-back="0" class="subtle">返回封面</button><button id="skipLetter" class="subtle">跳过逐行显示</button><button data-next="2" class="primary-btn">打开晚餐门票</button></div></div>
+    </section>
+    <section id="ticket" class="scene" hidden inert aria-labelledby="ticketTitle">
+      <div class="center-layout"><p class="eyebrow">ACT 03 / THE DATE</p><h2 class="headline" id="ticketTitle" tabindex="-1">One evening.<br><em>Two seats.</em></h2>
+        <button class="ticket-wrap" id="flipTicket" aria-pressed="false" aria-label="翻看门票背面">
+          <span class="ticket-flipper"><span class="ticket-face ticket-front">
+            <span class="ticket-picture" aria-hidden="true"><i>Admit<br>Two.</i></span>
+            <span class="ticket-body"><span class="ticket-kicker mono">DINNER INVITATION</span><span class="ticket-info">
+              <span><small>DATE / 日期</small><strong id="dateText"></strong></span><span><small>TIME / 时间</small><strong id="timeText"></strong></span>
+              <span><small>VENUE / 餐厅</small><strong id="placeText"></strong></span><span><small>FROM / 邀请人</small><strong id="ticketFrom"></strong></span></span>
+            </span><span class="ticket-stub mono"><span>NO. 0013</span><i class="barcode"></i></span>
+          </span><span class="ticket-face ticket-reverse" aria-hidden="true"><svg><use href="#star"/></svg><i>The best part isn't the place.<br>It's the company.</i><span>不是餐厅有多特别，而是我想和你一起去。</span><small class="mono">REVERSE SIDE · 0013</small></span></span>
+        </button>
+        <p class="flip-hint" id="flipHint">轻点门票，翻看背面</p>
+        <fieldset id="dateOptions" hidden><legend>你更喜欢哪个晚上？</legend><div id="candidateList"></div></fieldset>
+        <div class="scene-actions"><button data-back="1" class="subtle">返回信纸</button><button data-next="3" class="primary-btn">回应邀请</button></div>
+      </div>
+    </section>
+    <section id="choice" class="scene" hidden inert aria-labelledby="choiceTitle">
+      <div class="center-layout"><p class="eyebrow">ACT 04 / THE CHOICE</p><div class="choice-mark" aria-hidden="true">
+        <svg class="constellation" viewBox="0 0 360 105" fill="none">
+          <path pathLength="1" d="M7 76 39 58 84 70 112 38 151 43 180 52 205 32 242 46 275 18 315 31 348 9"/>
+          <g fill="currentColor"><circle cx="7" cy="76" r="1.7"/><circle cx="39" cy="58" r="2.4"/><circle cx="84" cy="70" r="1.7"/><circle cx="112" cy="38" r="2.2"/><circle cx="151" cy="43" r="1.7"/><circle cx="205" cy="32" r="2"/><circle cx="242" cy="46" r="1.7"/><circle cx="275" cy="18" r="2.6"/><circle cx="315" cy="31" r="1.7"/><circle cx="348" cy="9" r="2.2"/></g>
+        </svg><svg><use href="#star"/></svg><i>✦</i><i>✧</i><i>✦</i><i>✧</i></div><h2 class="headline" id="choiceTitle" tabindex="-1">Shall we make<br><em>this one happen?</em></h2>
+        <p class="subtitle">要不要，让这个故事真的发生？</p><div class="choices"><button data-answer="yes" class="primary-btn">好呀，我赴约</button><button data-answer="later" class="secondary-btn">我们换个时间</button><button data-answer="no" class="subtle">这次先不了</button></div><button class="subtle" data-back="2">返回门票</button>
+      </div>
+    </section>
+    <section id="ending" class="scene" hidden inert aria-labelledby="endingTitle">
+      <div class="center-layout"><p id="endingAct" class="eyebrow">ACT 05 / BONUS TRACK</p><h2 id="endingTitle" class="headline" tabindex="-1"></h2><p id="endingMessage" class="subtitle"></p>
+        <figure class="ending-card" id="keepsakeCard"><img id="ticketImage" alt="专属晚餐纪念票根"></figure>
+        <p class="save-tip" id="saveTip">手机可长按上方票根保存图片</p>
+        <label id="alternateWrap" hidden>你方便的另一个晚上<input id="alternateDate" type="date"></label>
+        <div class="ending-actions"><button id="copyReplyBtn" class="primary-btn"></button><a id="saveTicketBtn" class="secondary-btn" download="Rickydog-0013.png">下载高清 PNG</a></div>
+        <p id="copyStatus" class="copy-status" role="status"></p><p id="replyNote" class="fine"></p>
+        <div id="closingQuote" class="closing-quote"><i>We don't know the ending yet.<br>But I'd love to see how this chapter begins.</i><p>我们还不知道故事的结局。<br>但我很想知道，和你有关的这一章，会怎样开始。</p></div>
+        <div class="scene-actions"><button data-back="3" class="subtle">返回选择</button><button data-back="0" class="subtle">重看邀请函</button></div>
+      </div>
+    </section>
+  </main>
+  <footer class="frame"><div class="footer-rule mono"><span>TRACKLIST</span><span id="actCount">01 / 05</span></div>
+    <nav class="tracks" aria-label="已读曲目导航"></nav>
+    <div class="colophon mono"><span>RICKYDOG RECORDS</span><svg aria-hidden="true"><use href="#star"/></svg><span>PRIVATE PRESSING</span></div>
+  </footer>
+  <div id="toast" class="toast" role="status"></div>
+  <noscript>请启用 JavaScript，打开这张唱片。</noscript>
+</body>
+</html>
