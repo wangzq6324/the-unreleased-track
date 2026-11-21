@@ -23,10 +23,10 @@
         $('mailStatus').textContent='查看码不匹配，请重新输入。'; return;
       }
       if (!response.ok) throw new Error('read failed');
-      const {reply} = await response.json();
+      const {reply, toName = config.toName} = await response.json();
       try { sessionStorage.setItem('ricky-mail-key',key); } catch {}
       $('login').hidden=true; $('reloadMail').hidden=false;
-      $('mailStatus').textContent = reply ? config.toName + ' 的最新回复' : '还没有收到 ' + config.toName + ' 的回复。';
+      $('mailStatus').textContent = reply ? toName + ' 的最新回复' : '还没有收到 ' + toName + ' 的回复。';
       if (!reply) return;
       const details = [
         ['回应',{yes:'好呀，我赴约',later:'我们换个时间',no:'这次先不了'}[reply.answer]],

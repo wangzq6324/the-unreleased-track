@@ -2,13 +2,22 @@
 window.INVITATION_CONFIG = {
   fromName: 'Ricky',
   replyService: 'https://date.rickydog.com/rsvp', // 留空即可使用纯静态复制回复。
-  toName: 'leaya',
-  date: '11 月 22 日（周日）',
-  time: '晚上',
+  toName: '你',
+  date: '',
+  time: '',
   restaurant: '',
   // 可填最多三个真实可选日期，例如 ['11 月 28 日', '11 月 29 日']。
   candidateDates: [],
   foodOptions: ['火锅', '烤肉', '寿司', '意大利菜', '粤菜', '川湘菜', '泰国菜', '烧鸟串烧', '西北菜', '云南菜'],
+  // 私人资料由 /invitation 校验专属链接后加载。以下为可公开预览的信件。
+  letter: [
+    '本来只是想约你吃顿饭。',
+    '写到这里，又想把这张邀请好好做完。',
+    '隔着屏幕聊天，有时连笑声都要靠猜。',
+    '想和你坐在一张桌子旁，点些喜欢的菜，',
+    '聊聊最近听的歌，也聊点没什么用的小事。',
+    '吃到一半想换个话题，也不用找个表情包收尾。'
+  ],
   personalLine: '', // 附在邀请正文之后、签名之前
   replyYes: '好呀，我赴约！',
   replyLater: '我也想一起吃饭，我们换个彼此都有空的晚上吧。',

@@ -1,6 +1,6 @@
-(() => {
+(async () => {
   'use strict';
-  const config = window.INVITATION_CONFIG || {};
+  const {config, key:guestKey} = await openInvitation(window.INVITATION_CONFIG);
   const $ = id => document.getElementById(id);
   const put = (id, value) => { $(id).textContent = value; };
   const read = key => String(config[key] ?? '').trim();
@@ -17,15 +17,14 @@
   let furthest = 0;
   let answer = '';
   let preferredDate = '';
-  const guestKey = new URLSearchParams(location.search).get('invite') || new URLSearchParams(location.hash.slice(1)).get('invite') || '';
-  const canSubmit = /^[-_A-Za-z0-9]{32}$/.test(guestKey) && !!read('replyService');
+  const canSubmit = !!guestKey;
   let requestKey = '', requestId = '', delivered = '', sending = false;
   function replyData() {
     return {
       answer,
       food: answer === 'no' ? '' : dinnerFood(),
       date: answer === 'yes' ? dinnerDate() : '',
-      time: answer === 'yes' ? time : '',
+      time: answer === 'yes' ? dinnerTime() : '',
       alternate: answer === 'later' ? $('alternateDate').value : ''
     };
   }
@@ -52,18 +51,24 @@
     refreshSubmit();
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
-    let saved = false;
+    let saved = false, failure = 0;
     try {
       const response = await fetch(read('replyService') + '/reply', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + guestKey},
         body:JSON.stringify({...data, id:requestId}), signal:controller.signal, credentials:'omit', referrerPolicy:'no-referrer'
       });
+      failure = response.status;
       saved = response.ok && (await response.json()).saved === true;
       if (saved) delivered = signature;
     } catch { /* 网络断开时保留重试和手动复制。 */ }
     finally { clearTimeout(timer); sending = false; refreshSubmit(); }
     if (!saved && current === endingIndex && signature === JSON.stringify(replyData())) {
-      put('sendStatus','尚未确认收到。可以重试，也可以复制回复发给 ' + fromName + '。');
+      if (failure === 401 || failure === 410) {
+        put('sendStatus', '邀请链接已失效。你可以复制回复发给 ' + fromName + '。');
+      } else {
+        put('submitReply', '重试提交');
+        put('sendStatus','尚未确认收到。可以重试，也可以复制回复发给 ' + fromName + '。');
+      }
     }
   });
   let transitionTimer, letterTimer, tapTimer, toastTimer;
@@ -76,68 +81,104 @@
   put('ticketFrom', fromName);
   put('placeText', restaurant);
   put('timeText', time);
-  put('personalLine', read('personalLine'));
-  $('personalLine').hidden = !read('personalLine');
-  if (read('date')) put('invitationWhen', read('date') + read('time') + '，');
-  put('menuQuestion', toName + '，想吃点什么？');
   put('menuFrom', fromName);
-  const foodOptions = Array.isArray(config.foodOptions) ? config.foodOptions : ['火锅', '烤肉'];
-  function addFood(label, kind) {
+  const [opening, ...bodyLines] = config.letter;
+  put('lyricsTitle', opening);
+  const body = $('letterBody');
+  for (const text of [...bodyLines, read('personalLine')].filter(Boolean)) {
+    const line = document.createElement('p');
+    line.className = 'line'; line.textContent = text; body.append(line);
+  }
+  const question = document.createElement('p');
+  question.className = 'line stanza'; body.append(question);
+  const lines = [...document.querySelectorAll('.line')];
+  lines.forEach((line,i) => line.style.setProperty('--delay', (i * .55) + 's'));
+
+  const featured = [
+    ['日料','日料','慢慢吃，慢慢聊','japanese','那就留一晚，慢慢吃日料。'],
+    ['意大利菜','意大利菜','一点烛光，一点浪漫','italian','意面和烛光，记下了。'],
+    ['火锅','火锅','热热闹闹也不错','hotpot','锅底和蘸料，见面一起挑。'],
+    ['交给你啦','交给你啦','把惊喜留到见面','surprise','那我来挑一家，到时揭晓。']
+  ];
+  function addFood(label, value, kind, photo) {
     const row = document.createElement('label');
     const radio = document.createElement('input');
-    radio.type = 'radio';
-    radio.name = 'food';
-    radio.value = label;
-    radio.dataset.kind = kind;
+    radio.type = 'radio'; radio.name = 'food'; radio.value = value; radio.dataset.kind = kind;
+    const title = document.createElement('span'); title.textContent = label;
+    row.append(radio);
+    if (photo) {
+      const picture = document.createElement('img');
+      picture.src = 'assets/images/menu-' + photo[3] + '.webp';
+      picture.alt = ''; picture.width = 600; picture.height = 390; picture.loading = 'lazy'; picture.decoding = 'async';
+      const note = document.createElement('small'); note.textContent = photo[2];
+      row.append(picture, title, note);
+    } else row.append(title);
     radio.addEventListener('change', () => {
       $('dishWriteIn').hidden = kind !== 'custom';
       if (kind === 'custom') $('customDish').focus();
+      put('dishFeedback', photo ? photo[4] : kind === 'custom' ? '把你惦记的那道菜写下来。' : kind === 'open' ? '好，留到见面再决定。' : label + '，已经记在菜单上了。');
+      interactionSound('pick');
     });
-    const title = document.createElement('span');
-    title.textContent = label;
-    row.append(radio, title);
-    $('dishList').append(row);
+    $(photo ? 'featuredDishes' : 'dishList').append(row);
   }
-  for (const food of new Set(foodOptions)) {
-    if (typeof food === 'string' && food.trim()) addFood(food.trim(), 'preset');
+  for (const item of featured) addFood(item[0],item[1],'preset',item);
+  for (const value of new Set(config.foodOptions || [])) {
+    if (typeof value === 'string' && value.trim() && !featured.some(item=>item[1] === value)) addFood(value,value,'preset');
   }
-  addFood('我有别的想法', 'custom');
-  addFood('见面再决定', 'open');
+  addFood('我有别的想法','','custom');
+  addFood('见面再决定','','open');
   function dinnerFood() {
-    const selected = $('dishList').querySelector('input:checked');
+    const selected = $('menu').querySelector('input[name="food"]:checked');
     if (selected?.dataset.kind === 'custom') return $('customDish').value.trim();
-    return selected?.dataset.kind === 'preset' ? selected.value : '';
+    return selected?.value || '';
   }
-  const lines = [...document.querySelectorAll('.line')].filter(el => !el.hidden);
-  lines.forEach((el, i) => el.style.setProperty('--delay', (i * .61) + 's'));
 
-  // 封套在 CSS 中首屏加载。慢连接给出状态，并保留可以立即操作的播放按钮。
-  const art = new Image();
-  let artTimer = setTimeout(() => put('artStatus', '正在打开封套…'), 350);
-  art.onload = () => { clearTimeout(artTimer); put('artStatus', ''); };
-  art.onerror = () => { clearTimeout(artTimer); put('artStatus', '封套插画暂未载入，可继续播放。'); };
-  art.src = 'assets/sleeve.svg';
-
-  function dinnerDate() { return preferredDate || read('date') || undecided; }
-  const dates = Array.isArray(config.candidateDates)
-    ? [...new Set(config.candidateDates.map(x => String(x).trim()).filter(Boolean))].slice(0, 3) : [];
+  function datePassed() {
+    if (!read('dateISO')) return false;
+    // 此邀请的日期按上海时区结算，避免设备所在时区不同而提早过期。
+    return new Date(Date.now() + 8 * 3600000).toISOString().slice(0,10) > read('dateISO');
+  }
+  function dinnerDate() { return datePassed() ? '日期待重新确认' : preferredDate || read('date') || undecided; }
+  function dinnerTime() { return datePassed() ? '' : read('time'); }
+  function updateDate() {
+    put('dateText', dinnerDate()); put('timeText', dinnerTime() || undecided);
+    put('menuWhen', [dinnerDate(), dinnerTime()].filter(Boolean).join(' · '));
+    question.textContent = datePassed() ? '我们再挑一个彼此都有空的晚上，好吗？' : read('date') ? '所以，' + dinnerDate() + dinnerTime() + '，你有空吗？' : '所以，要不要一起找个晚上吃顿饭？';
+    $('dateOptions').hidden = !dates.length || datePassed();
+  }
+  const dates = Array.isArray(config.candidateDates) ? [...new Set(config.candidateDates)].filter(Boolean).slice(0,3) : [];
   for (const date of dates) {
     const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = date;
-    btn.setAttribute('aria-pressed', 'false');
+    btn.type = 'button'; btn.textContent = date; btn.setAttribute('aria-pressed','false');
     btn.addEventListener('click', () => {
-      preferredDate = preferredDate === date ? '' : date;
-      put('dateText', dinnerDate());
-      put('menuWhen', dinnerDate() + read('time'));
+      preferredDate = preferredDate === date ? '' : date; updateDate();
       for (const item of $('candidateList').children) item.setAttribute('aria-pressed', String(item.textContent === preferredDate));
     });
     $('candidateList').append(btn);
   }
-  $('dateOptions').hidden = !dates.length;
-  put('dateText', dinnerDate());
-
-  put('menuWhen', dinnerDate() + read('time'));
+  let wasPast = datePassed();
+  function refreshDay() {
+    if (document.hidden) return;
+    updateDate();
+    const past = datePassed();
+    if (past !== wasPast && current === endingIndex && answer === 'yes') {
+      renderTicket();
+      refreshSubmit();
+    }
+    wasPast = past;
+  }
+  document.addEventListener('visibilitychange',refreshDay);
+  let dayTimer;
+  function scheduleDayRefresh() {
+    clearTimeout(dayTimer);
+    if (!read('dateISO')) return;
+    const rollover = Date.parse(read('dateISO') + 'T00:00:00+08:00') + 86400000;
+    const delay = rollover - Date.now();
+    if (delay > 0) dayTimer = setTimeout(() => { refreshDay(); scheduleDayRefresh(); }, Math.min(delay+50, 2147483647));
+  }
+  window.addEventListener('pagehide',()=>clearTimeout(dayTimer));
+  window.addEventListener('pageshow',scheduleDayRefresh);
+  scheduleDayRefresh();
 
   const tracks = chapters.map((name, index) => {
     const btn = document.createElement('button');
@@ -180,6 +221,7 @@
     if (!scenes[index]) return;
     clearSceneTimers();
     current = index;
+    updateDate();
     // 回到选择或更早的一幕，就要重新作答才能打开相应结尾。
     furthest = index === endingIndex ? endingIndex : Math.max(Math.min(furthest, endingIndex - 1), index);
     if (index !== endingIndex) tracks[endingIndex].lastChild.textContent = chapters[endingIndex];
@@ -197,9 +239,10 @@
     if (index === 1) {
       $('lyrics').classList.toggle('revealed', reduced.matches);
       $('skipLetter').hidden = reduced.matches;
-      if (!reduced.matches) letterTimer = setTimeout(revealLetter, lines.length * 610 + 100);
+      if (!reduced.matches) letterTimer = setTimeout(revealLetter, lines.length * 550 + 110);
     }
     if (index === 2) setFlip(false);
+    if (index === 4) loadTicketPaper();
     if (focus) scenes[index].querySelector('h1,h2').focus({preventScroll:true});
     window.scrollTo(0, 0);
   }
@@ -215,6 +258,7 @@
     if (reduced.matches) { showScene(1); return; }
     transitioning = true;
     $('intro').classList.add('starting');
+    interactionSound('needle');
     $('playStory').setAttribute('aria-busy','true');
     $('playStory').lastChild.textContent = '正在落针…';
     $('skipIntro').hidden = false;
@@ -222,7 +266,7 @@
   });
   $('skipIntro').addEventListener('click', () => showScene(1));
   $('skipLetter').addEventListener('click', revealLetter);
-  $('flipTicket').addEventListener('click', () => setFlip($('flipTicket').getAttribute('aria-pressed') !== 'true'));
+  $('flipTicket').addEventListener('click', () => { setFlip($('flipTicket').getAttribute('aria-pressed') !== 'true'); interactionSound('paper'); });
   // 手指横拨唱片改变盘面角度。纵向手势始终交给页面滚动。
   const disc = $('record');
   let gesture = null;
@@ -278,6 +322,14 @@
     later: ['那就改天见。', '好吃的晚餐，值得等一个彼此都有空的晚上。', '复制协商时间消息'],
     no: ['谢谢你读到这里。', '谢谢你把这张唱片听到这里。祝你有个愉快的晚上。', '复制回复']
   };
+  const constellation = document.querySelector('.constellation g');
+  const starPoints=[[7,76],[25,66],[39,58],[63,65],[84,70],[112,38],[151,43],[180,52],[205,32],[242,46],[275,18],[315,31],[348,9]];
+  constellation.replaceChildren();
+  starPoints.forEach(([x,y],i)=>{
+    const point=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    point.setAttribute('cx',x);point.setAttribute('cy',y);point.setAttribute('r',i%3?1.8:2.7);
+    point.style.setProperty('--arrival',i*45+'ms'); constellation.append(point);
+  });
   function finish(kind) {
     answer = kind;
     document.body.dataset.answer = kind;
@@ -294,11 +346,7 @@
     for (const id of ['keepsakeCard','saveTicketBtn','saveTip','closingQuote']) $(id).hidden = !accepted;
     $('alternateWrap').hidden = kind !== 'later';
     if (accepted) {
-      try { renderTicket(); }
-      catch {
-        for (const id of ['keepsakeCard','saveTicketBtn','saveTip']) $(id).hidden = true;
-        put('copyStatus','当前浏览器未能生成票根，仍可复制赴约回复。');
-      }
+      renderTicket();
       if (!reduced.matches) {
         transitioning = true;
         $('choice').classList.add('accepting');
@@ -309,77 +357,35 @@
     showScene(endingIndex);
   }
 
-  function renderTicket() {
-    // 使用与封套配套的原创月海刻线。所有图元均本地绘制，file:// 也可导出。
-    const canvas = document.createElement('canvas');
-    canvas.width = 1920;
-    const measure = canvas.getContext('2d');
-    const textStyle = '53px Georgia, "Songti SC", serif';
-    function wrap(text, width) {
-      measure.font = textStyle;
-      const result = [];
-      let line = '';
-      for (const ch of text) {
-        if (line && measure.measureText(line + ch).width > width) { result.push(line); line = ''; }
-        line += ch;
-      }
-      if (line) result.push(line);
-      return result;
+  let ticketRevision = 0, lastExport = 0;
+  async function renderTicket() {
+    const revision = ++ticketRevision;
+    const details = {
+      from:fromName, to:toName,
+      date:[dinnerDate(), dinnerTime()].filter(Boolean).join(' · '),
+      venue:restaurant, food:dinnerFood() || '见面再决定'
+    };
+    $('ticketImage').removeAttribute('src');
+    $('saveTicketBtn').removeAttribute('href');
+    $('saveTicketBtn').hidden=true;
+    put('saveTip','正在压印纪念票根…');
+    try {
+      const url = await composeTicket(details);
+      if (revision !== ticketRevision || answer !== 'yes') return;
+      $('ticketImage').src=url;
+      $('ticketImage').alt=fromName+' × '+toName+'。'+details.date+'，'+restaurant+'，'+details.food+'。NO. 0013。';
+      $('saveTicketBtn').href=url; $('saveTicketBtn').hidden=false;
+      put('saveTip','手机可长按票根保存图片');
+    } catch {
+      if (revision !== ticketRevision || answer !== 'yes') return;
+      $('keepsakeCard').hidden=true;
+      put('saveTip','当前浏览器未能生成票根。你仍可以复制或提交回复。');
     }
-    const fields = [
-      ['邀请人', fromName], ['收件人', toName],
-      ['晚餐时间', dinnerDate() + (time !== undecided ? ' · ' + time : '')], ['餐厅', restaurant],
-      ['想吃的口味', dinnerFood() || '见面再决定']
-    ].map(([label, value]) => [label, wrap(value, 635)]);
-    const firstHeight = 132 + Math.max(fields[0][1].length,fields[1][1].length)*67;
-    const secondHeight = 122 + Math.max(fields[2][1].length,fields[3][1].length)*67;
-    canvas.height = 650 + firstHeight + secondHeight + 110 + fields[4][1].length * 67;
-    const h = canvas.height, c = canvas.getContext('2d'), cut = 1506;
-    function type(text, x, y, font, color) { c.fillStyle = color; c.font = font; c.fillText(text, x, y); }
-    function line(x,y,xx,yy,color) {
-      c.strokeStyle=color;c.beginPath();c.moveTo(x,y);c.lineTo(xx,yy);c.stroke();
-    }
-    c.fillStyle='#252533';c.fillRect(0,0,1920,h);
-    const paper=c.createLinearGradient(cut,0,1920,h);paper.addColorStop(0,'#ead6b9');paper.addColorStop(1,'#d5afa5');
-    c.fillStyle=paper;c.fillRect(cut,0,1920-cut,h);
-    c.strokeStyle='#a28a76';c.lineWidth=2;c.strokeRect(24,24,1872,h-48);
-    const gold='#d4b18f',cream='#f4e6d6',ink='#382e37';
-    type('R I C K Y    R E C O R D S',76,95,'29px monospace',gold);
-    type('BONUS TRACK',1170,95,'28px monospace',gold);
-    line(76,137,1435,137,'#786a62');
-    type('The Unreleased',70,300,'138px Georgia',cream);
-    type('Track',74,437,'italic 148px Georgia',gold);
-    fields.forEach(([label, rows], i) => {
-      const x=76+(i%2)*694, y=541+(i>1?firstHeight:0)+(i>3?secondHeight:0);
-      type(label,x,y,'29px monospace',gold);
-      rows.forEach((s,j)=>type(s,x,y+76+j*67,textStyle,cream));
-    });
-    line(76,h-79,1435,h-79,'#786a62');
-    type('PRIVATE DINNER PRESSING',76,h-42,'21px monospace',gold);
-    type('SIDE A   /   STEREO',1160,h-42,'21px monospace',gold);
-    c.setLineDash([9,9]);line(cut,25,cut,h-25,'#8a7368');c.setLineDash([]);
-    c.textAlign='center';const cx=1714;
-    type('ONE OF ONE',cx,105,'33px monospace',ink);
-    c.save();c.translate(cx,h*.44);c.scale(1.32,1.32);
-    c.beginPath();c.arc(0,0,102,0,Math.PI*2);c.clip();
-    c.fillStyle=ink;c.fillRect(-105,-105,210,210);
-    c.fillStyle='#ead7bd';c.beginPath();c.arc(-2,-36,28,0,Math.PI*2);c.fill();
-    c.fillStyle=ink;c.beginPath();c.arc(8,-45,26,0,Math.PI*2);c.fill();
-    c.strokeStyle='#c1a594';c.lineWidth=2;
-    for(let row=0;row<18;row++){
-      c.beginPath();
-      for(let x=-105;x<=105;x+=3){const y=6+row*6+Math.sin(x*.055+row*.8)*3+Math.cos(x*.029+row)*2;c.lineTo(x,y);}
-      c.stroke();
-    }
-    c.restore();
-    type('NO. 0013',cx,h-179,'51px Georgia',ink);
-    let bx=cx-110;
-    for(let i=0;i<44;i++){c.fillStyle=ink;const width=1+(i*13%5);c.fillRect(bx,h-134,width,65);bx+=width+2;}
-    const url=canvas.toDataURL('image/png');
-    $('ticketImage').src=url;
-    $('ticketImage').alt='The Unreleased Track，'+fromName+' 与 '+toName+' 的晚餐票根。'+dinnerDate()+'，'+time+'，'+restaurant+'。想吃：'+(dinnerFood() || '见面再决定')+'。NO. 0013，ONE OF ONE。';
-    $('saveTicketBtn').href=url;
   }
+  $('saveTicketBtn').addEventListener('click', e=>{
+    if (Date.now()-lastExport < 1100) { e.preventDefault(); return; }
+    lastExport=Date.now();
+  });
 
   async function clipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
@@ -395,7 +401,7 @@
     const kind=answer;
     const key={yes:'replyYes',later:'replyLater',no:'replyNo'}[kind];
     let message=read(key) || {yes:'好呀，我赴约。',later:'我们换个时间吧。',no:'谢谢邀请，这次先不了。'}[kind];
-    if (kind==='yes' && dinnerDate() !== undecided) message+=' '+dinnerDate()+(read('time') || '')+'见。';
+    if (kind==='yes' && dinnerDate() !== undecided) message+=' '+dinnerDate()+(datePassed() ? '，我们再约个晚上。' : dinnerTime()+'见。');
     if (kind==='yes' && dinnerFood()) message+=' 我想吃'+dinnerFood()+'。';
     if (kind==='later' && $('alternateDate').value) message+=' 我方便的日期是 '+$('alternateDate').value+'。';
     let ok=false;
@@ -420,11 +426,28 @@
     osc.onended=()=>{voices.delete(osc);osc.disconnect();filter.disconnect();gain.disconnect();};
     osc.start(when);osc.stop(when+duration+.02);
   }
+  function interactionSound(kind) {
+    if (!audible() || ctx?.state !== 'running') return;
+    const now = ctx.currentTime + .01;
+    if (kind === 'pick') { tone(440,now,.2,.011); return; }
+    const duration = kind === 'needle' ? .11 : .19;
+    const length = Math.floor(ctx.sampleRate * duration);
+    const buffer = ctx.createBuffer(1,length,ctx.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i=0; i<length; i++) samples[i]=(Math.random()*2-1)*Math.exp(-6*i/length);
+    const source = ctx.createBufferSource(), filter=ctx.createBiquadFilter(), gain=ctx.createGain();
+    source.buffer=buffer; filter.type='lowpass'; filter.frequency.value=kind==='needle'?760:1800;
+    gain.gain.value=.035; source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    voices.add(source); source.onended=()=>{voices.delete(source);source.disconnect();filter.disconnect();gain.disconnect();};
+    source.start(now);
+  }
   function musicBeat(){
     if(!audible() || ctx?.state!=='running') return;
     const chord=chords[Math.floor(beat/8)%chords.length],now=ctx.currentTime+.025;
     if(beat%8===0) chord.forEach(hz=>tone(hz/2,now,3.2,.008));
-    tone(chord[[0,2,1,3,2,1,0,2][beat%8]],now,1.25,.019);
+    const note=chord[[0,2,1,3,2,1,0,2][beat%8]];
+    if (current !== endingIndex || beat % 2 === 0) tone(note,now,current >= 4 ? 1.8 : 1.25,current === endingIndex ? .012 : .019);
+    if (current === 4 && beat%4 === 0) tone(note*2,now+.12,1.45,.006);
     beat++;
   }
   function stopBeat(){
@@ -468,5 +491,6 @@
   document.addEventListener('visibilitychange',syncAudio);
   window.addEventListener('pagehide',()=>{pageAway=true;syncAudio();clearSceneTimers();});
   window.addEventListener('pageshow',()=>{pageAway=false;syncAudio();if(current===1) revealLetter();});
+  $('playStory').disabled = false;
   showScene(location.hash === '#menu' ? scenes.indexOf($('menu')) : 0, false);
 })();

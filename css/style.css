@@ -194,7 +194,6 @@ input[type="date"] {border:1px solid var(--rule);background:transparent;color:in
 @media(max-width:360px){.frame{width:calc(100% - 32px)}.tracks button{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.starting .intro-copy h1,.starting .hero-chinese{opacity:1;transform:none}}
 
-.art-status:not(:empty) {position:absolute;bottom:40px;left:9%;padding:5px 9px;font-size:12px;background:#26232f;color:#f3e6d8}
 @media(min-width:621px){.secret{top:calc(100% + 1px)}}
 @keyframes first-turn {from{transform:rotate(0)}to{transform:rotate(48deg)}}
 .starting .vinyl {animation:first-turn 1.1s .28s cubic-bezier(.42,0,.82,.65) both}
@@ -295,3 +294,59 @@ body[data-act="3"] {background-color:#332831;--accent:#e1bba4}
 .menu-heading h2 em,.mailbox h1 em {font-style:normal}
 .mailbox h1 {font-family:"Songti SC","STSong",var(--serif);font-size:clamp(42px,8vw,72px);letter-spacing:.02em}
 .ticket-picture i {font-family:"Songti SC",serif;font-style:normal;line-height:1.14}
+
+/* Director edition: material and motion shared across the six printed pieces. */
+:root {--wine:#563642;--paper:#e7ded3;--turn:cubic-bezier(.22,.74,.23,1);--settle:.68s}
+.invite-status {font-size:12px;color:var(--quiet);line-height:1.7;margin-top:12px}
+#intro.active .intro-copy h1 {animation:enter var(--settle) var(--turn) both}
+#lyrics .paper {background-color:var(--cream);background-image:linear-gradient(90deg,#f7ecdc9e,#f6e8d65c),url('../assets/images/letter.webp');background-size:cover;background-position:center}
+#lyrics .paper h2 {font-size:clamp(21px,2.3vw,32px)}
+.letter-layout .paper {padding-block:23px}
+.lyrics-lines p {margin:3px 0}
+.lyrics-lines p:nth-child(3),.lyrics-lines .stanza {margin-top:12px}
+.ticket-spread {position:relative;isolation:isolate;padding:26px 16px 18px;max-width:980px}
+.dining-frame {position:absolute;z-index:-1;top:0;left:0;right:0;height:57%;min-height:235px;overflow:hidden;background:#302a28}
+.dining-frame img {height:100%;width:100%;object-fit:cover;object-position:50% 53%}
+.dining-frame:after {content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1b1722ad,#1b172258 50%,#1b172249)}
+.ticket-spread>.eyebrow,.ticket-spread>.headline,.ticket-spread>.headline em {color:#fff0da;text-shadow:0 1px 10px #17122060}
+.ticket-spread .headline {font-size:clamp(45px,4.7vw,76px)}
+.ticket-spread .ticket-wrap {margin-top:23px}
+.ticket-face {box-shadow:0 2px 0 #ab9279,0 4px 0 #cab9a5,0 16px 30px #45332933;outline:1px solid #bf9b70;outline-offset:-5px}
+.ticket-flipper {transition:transform .78s var(--turn)}
+#menu {padding-block:30px}
+.supper {max-width:880px}
+.menu-slip {padding:24px clamp(23px,4vw,48px)}
+.menu-heading {display:block;margin:17px 0 20px}
+.menu-heading .menu-english {color:#73564d;font:italic clamp(17px,2vw,23px) var(--serif);margin:0 0 5px}
+.menu-heading h2 {font-size:clamp(29px,4vw,49px)}
+.menu-heading>p:last-child {font-size:15px;color:#69554d}
+.menu-photos {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.menu-photos label {display:block;position:relative;cursor:pointer;min-width:0;padding-bottom:9px;border-bottom:2px solid #af958766}
+.menu-photos input {position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;z-index:1;margin:0}
+.menu-photos img {width:100%;height:auto;aspect-ratio:1.45;display:block;object-fit:cover;background:#c3a48e;transition:filter .3s,outline-color .3s;outline:2px solid transparent;outline-offset:-2px}
+.menu-photos span,.menu-photos small {display:block}.menu-photos span {font:600 19px/1.4 "Songti SC",serif;margin-top:8px}.menu-photos small {font-size:12px;line-height:1.4;color:#695248}
+.menu-photos input:checked~span {color:var(--wine)}.menu-photos input:checked~span:after {content:"✓";font:14px sans-serif;margin-left:6px}
+.menu-photos input:checked+img,.menu-photos input:focus-visible+img {outline-color:var(--wine)}
+.menu-photos label:has(input:checked) {border-color:var(--wine)}
+#moreDishes {margin-top:12px}
+#moreDishes summary {width:fit-content;cursor:pointer;padding:11px 0;font-size:14px}
+.dish-feedback {min-height:1.6em;font:15px/1.6 "Songti SC",serif;color:#713d44}
+.menu-sign {margin-top:3px}
+.choice-mark .flip-record {display:grid;place-items:center;position:absolute;z-index:1;width:50px;height:50px;transform-style:preserve-3d;transition:transform .85s var(--turn)}
+.flip-record b,.flip-record i {position:absolute;inset:0;display:grid;place-items:center;opacity:1;color:#f2d8bc;backface-visibility:hidden;border-radius:50%;font:8px var(--mono);background:repeating-radial-gradient(#282531 0 2px,#67565d 3px,#292832 4px);text-shadow:0 1px 2px black}
+.choice-mark .flip-record i {inset:0;opacity:1;font:8px var(--mono);transform:rotateY(180deg);background:repeating-radial-gradient(#62434e 0 2px,#a88780 3px,#584151 4px)}
+.accepting .choice-mark .flip-record {transform:rotateY(180deg)}
+.accepting .choice-mark .flip-record i {animation:none}
+.accepting .constellation circle {animation:light-stars .35s var(--arrival) both}
+.choices .subtle {color:var(--cream);text-decoration-color:var(--quiet)}
+@media(max-width:680px){.menu-photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.menu-photos img{aspect-ratio:1.9}.menu-slip{padding:20px}.menu-heading{margin:12px 0}.menu-photos span{font-size:17px;margin-top:5px}.menu-photos small{font-size:12px}.menu-photos label{padding-bottom:7px}.ticket-spread{padding-inline:9px}.ticket-spread .scene-actions{gap:4px}.ticket-spread .scene-actions button{padding-inline:9px}}
+
+.sleeve {background-image:url('../assets/images/hero.webp');background-size:170.5% 112.2%;background-position:6.1% 38%;border-color:#b79a8550}
+.cover-frame {border-color:#d2bca161}
+.cover-foil {opacity:.65}
+.vinyl {background:#18181e url('../assets/images/grooves.webp') center/cover}
+.vinyl:before {opacity:.22}
+.rings {opacity:.25}
+.label {background:transparent;box-shadow:none;color:#301f26}
+.orbit-score {opacity:.29}
+@media(max-width:620px){.sleeve{background-image:url('../assets/images/hero-mobile.webp');background-size:170.5% 112.2%;background-position:0 38%}}

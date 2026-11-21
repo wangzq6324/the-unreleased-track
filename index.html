@@ -4,13 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
+  <meta property="og:title" content="The Unreleased Track · 一张双人晚餐邀请">
+  <meta property="og:description" content="一张未发行的私人唱片。有些故事，从一顿晚餐开始。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://wangzq6324.github.io/the-unreleased-track/assets/images/share.jpg">
+  <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
   <meta name="theme-color" content="#111626">
   <meta name="description" content="The Unreleased Track，一张私人唱片，一封晚餐邀请。">
   <title>The Unreleased Track · Ricky Records</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=zh3">
-  <script defer src="js/config.js?v=zh3"></script>
-  <script defer src="js/app.js?v=zh3"></script>
+  <link rel="preload" as="image" href="assets/images/hero-mobile.webp" media="(max-width:620px)">
+  <link rel="preload" as="image" href="assets/images/hero.webp" media="(min-width:621px)">
+  <link rel="stylesheet" href="css/style.css?v=director1">
+  <script defer src="js/config.js?v=director1"></script>
+  <script defer src="js/invitation.js?v=director1"></script>
+  <script defer src="js/keepsake.js?v=director1"></script>
+  <script defer src="js/app.js?v=director1"></script>
 </head>
 <body data-act="0">
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -29,7 +38,9 @@
           <p class="eyebrow"><span class="rule"></span>第一幕 <span class="slash">/</span> 黑胶序曲</p>
           <h1 id="introTitle" tabindex="-1">The Night<br>We Haven’t<br><em>Written Yet.</em></h1>
           <p class="hero-chinese">有些故事，从一顿晚餐开始。</p>
-          <div class="play-row"><button id="playStory" class="primary-btn" type="button"><span class="play-icon" aria-hidden="true"></span>播放这段故事</button><span class="duration mono">约 1 分钟</span></div>
+          <div class="play-row"><button id="playStory" disabled class="primary-btn" type="button"><span class="play-icon" aria-hidden="true"></span>播放这段故事</button><span class="duration mono">约 1 分钟</span></div>
+          <p id="inviteStatus" class="invite-status" role="status">正在打开封套…</p>
+          <button id="inviteRetry" hidden class="subtle" type="button">重新读取邀请</button>
           <button id="skipIntro" class="skip" hidden type="button">跳过开场</button>
         </div>
         <figure class="pressing">
@@ -55,7 +66,6 @@
             </svg>
           </div>
           <figcaption class="art-caption mono"><span><i class="pin"></i>SIDE A</span><span>33⅓ RPM <b>·</b> ONE OF ONE</span></figcaption>
-          <p id="artStatus" class="art-status" role="status"></p>
           <p id="secret" class="secret" role="status"></p>
         </figure>
       </div>
@@ -64,17 +74,13 @@
       <div class="letter-layout"><div class="paper">
         <div class="printline mono"><span>RICKY RECORDS</span><span>第二幕 / 写给你的信</span></div>
         <p class="paper-salutation line" id="recipientLine"></p>
-        <h2 id="lyricsTitle" class="line" tabindex="-1">有一段话，想当面说。</h2>
-        <div class="lyrics-lines">
-          <p class="line">比起继续在聊天框里说晚安，</p><p class="line">我更想找一个晚上，</p><p class="line">坐在你对面，慢慢聊天。</p>
-          <p class="line stanza">或许我们可以找一家不错的餐厅，</p><p class="line">点一些喜欢的东西，</p><p class="line">然后把时间浪费在一些有趣的话题上。</p>
-          <p class="line stanza"><span id="invitationWhen">所以，这个周末，</span></p><p class="line">要不要和我一起吃顿饭？</p><p class="line stanza" id="personalLine" hidden></p>
-        </div>
+        <h2 id="lyricsTitle" class="line" tabindex="-1"></h2>
+        <div class="lyrics-lines" id="letterBody"></div>
         <div class="paper-last"><p class="signature line">Yours,<br><em id="fromSignature"></em></p><svg class="stamp" aria-hidden="true"><use href="#disc"/></svg></div>
       </div><div class="scene-actions"><button data-back="0" class="subtle">返回封面</button><button id="skipLetter" class="subtle">跳过逐行显示</button><button data-next="2" class="primary-btn">打开晚餐门票</button></div></div>
     </section>
     <section id="ticket" class="scene" hidden inert aria-labelledby="ticketTitle">
-      <div class="center-layout"><p class="eyebrow">第三幕 / 晚餐门票</p><h2 class="headline" id="ticketTitle" tabindex="-1">One evening.<br><em>Two seats.</em></h2>
+      <div class="center-layout ticket-spread"><div class="dining-frame"><img loading="lazy" decoding="async" src="assets/images/restaurant.webp" width="960" height="600" alt="夜晚的窗边，有两张椅子和一盏暖灯"></div><p class="eyebrow">第三幕 / 晚餐门票</p><h2 class="headline" id="ticketTitle" tabindex="-1">One evening.<br><em>Two seats.</em></h2>
         <button class="ticket-wrap" id="flipTicket" aria-pressed="false" aria-label="翻看门票背面">
           <span class="ticket-flipper"><span class="ticket-face ticket-front">
             <span class="ticket-picture" aria-hidden="true"><i>双人<br>入场</i></span>
@@ -86,30 +92,28 @@
         </button>
         <p class="flip-hint" id="flipHint">轻点门票，翻看背面</p>
         <fieldset id="dateOptions" hidden><legend>你更喜欢哪个晚上？</legend><div id="candidateList"></div></fieldset>
-        <div class="scene-actions"><button data-back="1" class="subtle">返回信纸</button><button data-next="3" class="primary-btn">选选吃什么</button></div>
+        <div class="scene-actions"><button data-back="1" class="subtle">返回信纸</button><button data-next="4" class="subtle">跳过选餐</button><button data-next="3" class="primary-btn">一起选晚餐</button></div>
       </div>
     </section>
     <section id="menu" class="scene" hidden inert aria-labelledby="menuTitle">
       <div class="supper">
         <div class="menu-slip">
           <div class="menu-edition mono"><span>第四幕 / 点餐</span><span id="menuWhen"></span></div>
-          <header class="menu-heading">
-            <div><h2 id="menuTitle" tabindex="-1">晚餐<em>菜单</em></h2><p id="menuQuestion"></p></div>
-            <svg class="supper-seal" viewBox="0 0 72 72" aria-hidden="true" fill="none" stroke="currentColor">
-              <circle cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="26.5" stroke-dasharray="1 3"/>
-              <g transform="rotate(-9 36 36)" stroke-linecap="round"><path d="M17 42h38m-35-3a16 16 0 0 1 32 0Zm14-17a2 2 0 1 1 4 0M28 32q2-4 7-5M24 46h24"/></g>
-            </svg>
-          </header>
-          <fieldset class="dish-field"><legend>选一个想吃的，也可以见面再定。</legend><div class="dish-list" id="dishList"></div></fieldset>
-          <label id="dishWriteIn" hidden>想吃什么？<input id="customDish" maxlength="36" type="text" placeholder="写下菜名或口味"></label>
+          <header class="menu-heading"><p class="menu-english">What are we having tonight?</p><h2 id="menuTitle" tabindex="-1">今晚想吃点什么？</h2><p>先选个喜欢的，剩下的交给我。</p></header>
+          <fieldset class="dish-field" aria-labelledby="menuTitle">
+            <div id="featuredDishes" class="menu-photos"></div>
+            <details id="moreDishes"><summary>更多选择</summary><div class="dish-list" id="dishList"></div>
+              <label id="dishWriteIn" hidden>想吃什么？<input id="customDish" maxlength="36" type="text" placeholder="写下菜名或口味"></label>
+            </details>
+          </fieldset><p id="dishFeedback" class="dish-feedback" role="status"></p>
           <div class="menu-sign"><span>等你点菜，</span> <i id="menuFrom"></i></div>
         </div>
-        <div class="scene-actions"><button class="subtle" data-back="2">返回门票</button><button class="primary-btn" data-next="4">回应邀请</button></div>
+        <div class="scene-actions"><button class="subtle" data-back="2">返回门票</button><button class="primary-btn" data-next="4">继续回应</button></div>
       </div>
     </section>
     <section id="choice" class="scene" hidden inert aria-labelledby="choiceTitle">
       <div class="center-layout"><p class="eyebrow">第五幕 / 你的回应</p><div class="choice-mark" aria-hidden="true">
-        <svg class="constellation" viewBox="0 0 360 105" fill="none">
+        <span class="flip-record" aria-hidden="true"><b>SIDE A</b><i>SIDE B</i></span><svg class="constellation" viewBox="0 0 360 105" fill="none">
           <path pathLength="1" d="M7 76 39 58 84 70 112 38 151 43 180 52 205 32 242 46 275 18 315 31 348 9"/>
           <g fill="currentColor"><circle cx="7" cy="76" r="1.7"/><circle cx="39" cy="58" r="2.4"/><circle cx="84" cy="70" r="1.7"/><circle cx="112" cy="38" r="2.2"/><circle cx="151" cy="43" r="1.7"/><circle cx="205" cy="32" r="2"/><circle cx="242" cy="46" r="1.7"/><circle cx="275" cy="18" r="2.6"/><circle cx="315" cy="31" r="1.7"/><circle cx="348" cy="9" r="2.2"/></g>
         </svg><svg><use href="#star"/></svg><i>✦</i><i>✧</i><i>✦</i><i>✧</i></div><h2 class="headline" id="choiceTitle" tabindex="-1">Shall we make<br><em>this one happen?</em></h2>
